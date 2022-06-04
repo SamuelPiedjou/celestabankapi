@@ -28,9 +28,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Admin> deleteAdmin(long adminId) {
+    public boolean deleteAdmin(long adminId) {
         adminRepository.deleteById(adminId);
-        return adminRepository.findAll();
+        return true;
     }
 
     @Override

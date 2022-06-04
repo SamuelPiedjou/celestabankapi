@@ -1,5 +1,6 @@
 package com.celestabank.celestabankapi.entity;
 
+import com.celestabank.celestabankapi.enums.AccountStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,4 +16,5 @@ public class CurrentAccount extends  Account {
     private double amount;
     private  int months;
     private double penaltyAmount;
+    private AccountStatus accountStatus;
 }

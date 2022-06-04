@@ -6,6 +6,7 @@ import com.celestabank.celestabankapi.entity.SavingAccount;
 import com.celestabank.celestabankapi.entity.Transaction;
 import com.celestabank.celestabankapi.exeption.BalanceNotSufficientException;
 import com.celestabank.celestabankapi.exeption.BankAccountNotFoundException;
+import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
 
 import java.util.List;
 
@@ -15,9 +16,9 @@ public interface AccountService {
 
     public List<CurrentAccount> addCurrentAccount(CurrentAccount currentAccount);
 
-    public boolean deleteSavingId(long accountId) throws BankAccountNotFoundException;
+    public boolean deleteSavingId(long accountId) throws BankAccountNotFoundException, InvalidDetailsException;
 
-    public boolean deleteCurrentId(long accountId);
+    public boolean deleteCurrentId(long accountId) throws InvalidDetailsException;
 
     public Account getAccountById(long accountId) throws BankAccountNotFoundException;
 
