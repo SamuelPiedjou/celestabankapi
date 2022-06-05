@@ -28,7 +28,9 @@ public interface AccountService {
 
     public Transaction withdraw(double amount, long accountId, long customerId, String password) throws BankAccountNotFoundException, BalanceNotSufficientException;
 
-    public List<Account> viewAccounts();
+
+
+    List<Account> viewAccounts(long accountId);
 
     public List<Account> viewSavingAcc(long customerId);
 

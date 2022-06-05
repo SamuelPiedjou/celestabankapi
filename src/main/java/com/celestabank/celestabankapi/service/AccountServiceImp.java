@@ -120,7 +120,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public List<Account> viewAccounts() {
+    public List<Account> viewAccounts(long accountId) {
         return accountRepository.findAll();
     }
 
