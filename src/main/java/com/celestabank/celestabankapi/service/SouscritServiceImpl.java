@@ -1,6 +1,7 @@
 package com.celestabank.celestabankapi.service;
 
 import com.celestabank.celestabankapi.entity.Souscrit;
+import com.celestabank.celestabankapi.repository.SouscritRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,28 +13,34 @@ import java.util.Set;
 @Slf4j
 @AllArgsConstructor
 public class SouscritServiceImpl implements SouscritService {
+    private SouscritRepository db;
     @Override
     public Souscrit addNominee(Souscrit nominee) {
-        return null;
+        db.save(nominee);
+        return nominee;
     }
 
     @Override
     public Souscrit updateNominee(Souscrit nominee) {
-        return null;
+        db.save(nominee);
+        return nominee;
     }
 
     @Override
     public List<Souscrit> deleteNominee(int nomineeId) {
-        return null;
+        db.deleteById(nomineeId);
+        return db.findAll();
     }
 
     @Override
     public Souscrit findNomineeById(int nomineeId) {
-        return null;
+        Souscrit souscrit = db.findById(nomineeId).get();
+        return souscrit;
     }
 
     @Override
     public Set<Souscrit> listAllNominees(int accountId) {
-        return null;
+
+        return db.findByAccount(accountId);
     }
 }

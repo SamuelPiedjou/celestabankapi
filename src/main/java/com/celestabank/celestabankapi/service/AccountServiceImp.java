@@ -4,10 +4,12 @@ import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
 import com.celestabank.celestabankapi.entity.Transaction;
+import com.celestabank.celestabankapi.enums.AccountStatus;
 import com.celestabank.celestabankapi.enums.TransactionStatus;
 import com.celestabank.celestabankapi.enums.TransactionType;
 import com.celestabank.celestabankapi.exeption.BalanceNotSufficientException;
 import com.celestabank.celestabankapi.exeption.BankAccountNotFoundException;
+import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
 import com.celestabank.celestabankapi.repository.AccountRepository;
 import com.celestabank.celestabankapi.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
@@ -27,7 +29,8 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public List<Account> addAccount(Account account) {
-        return null;
+        accountRepository.saveAndFlush(account);
+        return accountRepository.findAll();
     }
 
     @Override
@@ -43,19 +46,29 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public boolean deleteSavingId(long accountId) throws BankAccountNotFoundException {
+    public boolean deleteSavingId(long accountId) throws  InvalidDetailsException {
         if (accountId !=0){
-            accountRepository.deleteById(accountId);
-            return true;
+            SavingAccount savingAccount = (SavingAccount) accountRepository.findById(accountId).orElse(null);
+            if (savingAccount.getBalance()>savingAccount.getMinBalance()){
+                throw new InvalidDetailsException("IMPOSSIBLE DE SUPPIMER UN COMPTE ACTIF, VIDEZ LE COMPTE");
+            }else{
+                accountRepository.deleteById(accountId);
+                return true;
+            }
         }
         return false;
     }
 
     @Override
-    public boolean deleteCurrentId(long accountId) {
+    public boolean deleteCurrentId(long accountId) throws InvalidDetailsException {
         if (accountId !=0){
-            accountRepository.deleteById(accountId);
-            return true;
+            CurrentAccount currentAccount  = (CurrentAccount) accountRepository.findById(accountId).orElse(null);
+            if (currentAccount.getAccountStatus().equals(AccountStatus.ACTIVATED)){
+                throw new InvalidDetailsException("IMPOSSIBLE DE SUPPIMER UN COMPTE ACTIF, DESACTIVER LE COMPTE !");
+            }else{
+                accountRepository.deleteById(accountId);
+                return true;
+            }
         }
         return false;
     }
@@ -68,11 +81,13 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public List<SavingAccount> updateSavingAccount(SavingAccount savingAccount) {
+        accountRepository.saveAndFlush(savingAccount);
         return null;
     }
 
     @Override
     public List<CurrentAccount> updateCurrentAccount(CurrentAccount currentAccount) {
+        accountRepository.saveAndFlush(currentAccount);
         return null;
     }
 
@@ -105,7 +120,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public List<Account> viewAccounts() {
+    public List<Account> viewAccounts(long accountId) {
         return accountRepository.findAll();
     }
 
