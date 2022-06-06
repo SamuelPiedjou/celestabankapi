@@ -1,7 +1,5 @@
 
-Le projet est clonable a partir de mon repository public via le lien : 
-
-https://github.com/SamuelPiedjou/celestabankapi.git
+Le projet est clonable a partir de mon repository public via le lien : https://github.com/SamuelPiedjou/celestabankapi.git
 
 Accès a la documentation swagger du projet :
     http://localhost:8086/swagger-ui/index.html
