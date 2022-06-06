@@ -1,6 +1,7 @@
 package com.celestabank.celestabankapi.service;
 
 import com.celestabank.celestabankapi.entity.Admin;
+import com.celestabank.celestabankapi.exeption.AdminNotFoundException;
 import com.celestabank.celestabankapi.repository.AdminRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,26 +17,31 @@ public class AdminServiceImpl implements AdminService {
     private AdminRepository adminRepository;
 
     @Override
-    public List<Admin> addAdmin(Admin admin) {
-        Admin admins =adminRepository.saveAndFlush(admin);
-        return (List<Admin>) admins;
+    public Admin addAdmin(Admin admin) {
+        log.info("AJout de : "+admin + "comme administrateur effectué avec succès");
+         adminRepository.saveAndFlush(admin);
+        return admin;
     }
 
     @Override
-    public List<Admin> updateAdmin(Admin admin) {
-        Admin admins =adminRepository.saveAndFlush(admin);
-        return (List<Admin>) admins;
+    public Admin updateAdmin(Admin admin) throws AdminNotFoundException {
+        log.info("Admin",admin);
+            adminRepository.saveAndFlush(admin);
+            return admin;
+
     }
 
     @Override
-    public List<Admin> deleteAdmin(long adminId) {
+    public boolean deleteAdmin(long adminId) {
+        log.info("Supression de l'admin  " +adminId+ " ----> SUCCESSFUL" );
         adminRepository.deleteById(adminId);
-        return adminRepository.findAll();
+        return true;
     }
 
     @Override
     public Admin findAdminById(long adminId) throws AccountNotFoundException {
         Admin admin =adminRepository.findById(adminId).orElseThrow(()-> new AccountNotFoundException("SESSION INTROUVABLE !")) ;
+
         return admin;
     }
 

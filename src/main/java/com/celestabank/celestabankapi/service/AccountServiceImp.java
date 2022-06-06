@@ -1,22 +1,22 @@
 package com.celestabank.celestabankapi.service;
 
-import com.celestabank.celestabankapi.entity.Account;
-import com.celestabank.celestabankapi.entity.CurrentAccount;
-import com.celestabank.celestabankapi.entity.SavingAccount;
-import com.celestabank.celestabankapi.entity.Transaction;
+import com.celestabank.celestabankapi.entity.*;
 import com.celestabank.celestabankapi.enums.AccountStatus;
+import com.celestabank.celestabankapi.enums.AccountType;
 import com.celestabank.celestabankapi.enums.TransactionStatus;
 import com.celestabank.celestabankapi.enums.TransactionType;
 import com.celestabank.celestabankapi.exeption.BalanceNotSufficientException;
 import com.celestabank.celestabankapi.exeption.BankAccountNotFoundException;
+import com.celestabank.celestabankapi.exeption.CustomerNotFoundException;
 import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
 import com.celestabank.celestabankapi.repository.AccountRepository;
-import com.celestabank.celestabankapi.repository.TransactionRepository;
+import com.celestabank.celestabankapi.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,24 +26,47 @@ public class AccountServiceImp implements AccountService {
 
     private AccountRepository accountRepository;
     private TransactionServiceImpl transactionService;
+    private CustomerRepository customerRepository;
 
     @Override
-    public List<Account> addAccount(Account account) {
-        accountRepository.saveAndFlush(account);
-        return accountRepository.findAll();
+    public CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException {
+        log.info("CREATING ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
+        Customer customer= customerRepository.findById(customerId).orElse(null);
+        if(customer==null)
+            throw new CustomerNotFoundException("Customer not found");
+        CurrentAccount currentAccount=new CurrentAccount();
+        currentAccount.setAccountId((long) (Math.random()*(9999999- 1)+0000001));
+        currentAccount.setCreatedAt(new Date());
+        currentAccount.setBalance(initialBalance);
+        currentAccount.setOverDraft( currentAccount.getOverDraft());
+        currentAccount.setCustomer(customer);
+        currentAccount.setAccountStatus(AccountStatus.CREATED);
+        currentAccount.setAccountType(AccountType.CURRENT);
+        CurrentAccount savedBankAccount = accountRepository.saveAndFlush(currentAccount);
+        log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ currentAccount.getAccountId() +" and your balance id "+currentAccount.getBalance());
+        return savedBankAccount;
+
     }
 
     @Override
-    public List<SavingAccount> addSavingAccount(SavingAccount savingAccount) {
-        SavingAccount savingAccounts =  accountRepository.saveAndFlush(savingAccount);
-        return (List<SavingAccount>) savingAccounts;
+    public SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException {
+        log.info("CREATING ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
+        Customer customer= customerRepository.findById(customerId).orElse(null);
+        if(customer==null)
+            throw new CustomerNotFoundException("Customer not found");
+        SavingAccount savingAccount=new SavingAccount();
+        savingAccount.setAccountId((long) (Math.random()*(9999999- 1)+0000001));
+        savingAccount.setCreatedAt(new Date());
+        savingAccount.setBalance(initialBalance);
+        savingAccount.setMinBalance(savingAccount.getMinBalance());
+        savingAccount.setAccountStatus(AccountStatus.CREATED);
+        savingAccount.setCustomer(customer);
+        savingAccount.setAccountType(AccountType.SAVING);
+        SavingAccount savedBankAccount = accountRepository.saveAndFlush(savingAccount);
+        return savedBankAccount;
     }
 
-    @Override
-    public List<CurrentAccount> addCurrentAccount(CurrentAccount currentAccount) {
-        CurrentAccount  currentAccounts=accountRepository.saveAndFlush(currentAccount);
-        return (List<CurrentAccount>) currentAccounts;
-    }
+
 
     @Override
     public boolean deleteSavingId(long accountId) throws  InvalidDetailsException {
@@ -64,7 +87,7 @@ public class AccountServiceImp implements AccountService {
         if (accountId !=0){
             CurrentAccount currentAccount  = (CurrentAccount) accountRepository.findById(accountId).orElse(null);
             if (currentAccount.getAccountStatus().equals(AccountStatus.ACTIVATED)){
-                throw new InvalidDetailsException("IMPOSSIBLE DE SUPPIMER UN COMPTE ACTIF, DESACTIVER LE COMPTE !");
+                throw new InvalidDetailsException("THIS ACCOUNT IT'S AN ACTIF ACCOUNT, PLEASE DISABLE FIRST AND RETRY !");
             }else{
                 accountRepository.deleteById(accountId);
                 return true;
@@ -72,51 +95,60 @@ public class AccountServiceImp implements AccountService {
         }
         return false;
     }
-
     @Override
-    public Account getAccountById(long accountId) throws BankAccountNotFoundException {
-        Account account= accountRepository.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("Account not Found"));
-        return account;
+    public Account getBankAccount(long accountId) throws BankAccountNotFoundException {
+        Account bankAccount=accountRepository.findById(accountId)
+                .orElseThrow(()->new BankAccountNotFoundException("BankAccount not found"));
+        if(bankAccount instanceof SavingAccount){
+            SavingAccount savingAccount= (SavingAccount) bankAccount;
+            return savingAccount;
+        } else {
+            CurrentAccount currentAccount= (CurrentAccount) bankAccount;
+            return currentAccount;
+        }
     }
 
     @Override
-    public List<SavingAccount> updateSavingAccount(SavingAccount savingAccount) {
+    public SavingAccount updateSavingAccount(SavingAccount savingAccount) {
         accountRepository.saveAndFlush(savingAccount);
-        return null;
+        return savingAccount;
     }
 
     @Override
-    public List<CurrentAccount> updateCurrentAccount(CurrentAccount currentAccount) {
+    public CurrentAccount  updateCurrentAccount(CurrentAccount currentAccount) {
         accountRepository.saveAndFlush(currentAccount);
-        return null;
+        return currentAccount;
     }
 
     @Override
-    public Transaction withdraw(double amount, long accountId, long customerId, String password) throws BalanceNotSufficientException, BankAccountNotFoundException {
-        Account a = getAccountById(accountId);
+    public boolean withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException {
+        Account a = accountRepository.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("Bank Account not Found 404 !"));
         Transaction t = new Transaction();
         if (amount> a.getBalance()){
             t.setAmount(a.getBalance());
             t.setDateTime(LocalDateTime.now());
             t.setTransactionType(TransactionType.DEBIT);
-            t.setTransactionRemarks("PAS ASSEZ DE FONDS");
+            t.setTransactionRemarks(remark);
             t.setTransactionStatus(TransactionStatus.FAILED);
             transactionService.createTransaction(t);
-            new BalanceNotSufficientException("PAS ASSEZ DE FOND");
-            return null;
-        }else{
-            double balance = a.getBalance() - amount;
-            a.setBalance(balance);
-            accountRepository.save(a);
-            t.setAmount(amount);
-            t.setDateTime(LocalDateTime.now());
-            t.setTransactionType(TransactionType.DEBIT);
-            t.setTransactionRemarks("CASH_OUT OF "+amount+" "+"IS SUCCESSFUL");
-            t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
-            t.setAccount(accountRepository.findById(accountId).get());
-            transactionService.createTransaction(t);
-            return transactionService.findTransactionById(t.getTransactionId());
+            new BalanceNotSufficientException("BALANCE NOT SUFFICIENT");
+            return false;
+        }else if(a instanceof SavingAccount){
+            if (a.getBalance()< ((SavingAccount) a).getMinBalance()) throw  new InvalidDetailsException("THIS ACCOUNT MUST HAVE ALLWAYS "+((SavingAccount) a).getMinBalance()+ "IN BALANCE");
         }
+        else {
+                double balance = a.getBalance() - amount;
+                a.setBalance(balance);
+                accountRepository.save(a);
+                t.setAmount(amount);
+                t.setDateTime(LocalDateTime.now());
+                t.setTransactionType(TransactionType.DEBIT);
+                t.setTransactionRemarks("CASH_OUT OF "+amount+" "+"IS SUCCESSFUL");
+                t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
+                transactionService.createTransaction(t);
+                return true;
+            }
+        return  false;
     }
 
     @Override
@@ -135,8 +167,8 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Transaction deposit(double amount, long accountId) throws BankAccountNotFoundException {
-        Account a = getAccountById(accountId);
+    public Transaction deposit(double amount, long accountId,String remark) throws BankAccountNotFoundException {
+        Account a = accountRepository.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("Bank account not found"));
         double balance = a.getBalance() + amount;
         a.setBalance(balance);
         accountRepository.save(a);
@@ -152,48 +184,9 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Transaction transfer(long senderAccountId, long reciverAccountId, double amount, long customerId, String password) throws BankAccountNotFoundException, BalanceNotSufficientException {
-
-        Account a = getAccountById(senderAccountId);
-        Account b = getAccountById(reciverAccountId);
-        senderAccountId =a.getAccountId();
-        reciverAccountId =a.getAccountId();
-        Transaction sender = new Transaction();
-        Transaction reciver = new Transaction();
-        if (amount>a.getBalance()){
-            sender.setAmount(a.getBalance());
-            sender.setDateTime(LocalDateTime.now());
-            sender.setTransactionType(TransactionType.DEBIT);
-            sender.setTransactionRemarks("PAS ASSEZ DE FOND");
-            sender.setTransactionStatus(TransactionStatus.FAILED);
-            transactionService.createTransaction(sender);
-            return  null;
-        }else{
-            double balance = a.getBalance()-amount;
-            a.setBalance(balance);
-            accountRepository.save(a);
-            sender.setAmount(amount);
-            sender.setDateTime(LocalDateTime.now());
-            sender.setTransactionType(TransactionType.DEBIT);
-            sender.setTransactionRemarks("CASH_OUT DE" + amount + " XAF" + "IS SUCCESSFUL");
-            sender.setTransactionStatus(TransactionStatus.SUCCESSFUL);
-            sender.setAccount(accountRepository.findById(a.getAccountId()).get());
-            transactionService.createTransaction(sender);
-
-//			reciever
-            double balanceReciver = b.getBalance() + amount;
-            b.setBalance(balanceReciver);
-            accountRepository.save(b);
-            reciver.setAmount(amount);
-            reciver.setDateTime(LocalDateTime.now());
-            reciver.setTransactionType(TransactionType.CREDIT);
-            reciver.setTransactionRemarks("CASH IN OF" + amount + "  XAF " + "IS SUCCESSFUL");
-            reciver.setTransactionStatus(TransactionStatus.SUCCESSFUL);
-            reciver.setAccount(accountRepository.findById(b.getAccountId()).get());
-            transactionService.createTransaction(reciver);
-
-            return transactionService.findTransactionById(reciver.getTransactionId());
-        }
-
+    public boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException {
+        withdraw(amount,senderAccountId,"transfer to "+reciverAccountId);
+        deposit(amount,reciverAccountId,"transfer from "+senderAccountId);
+       return true;
     }
 }

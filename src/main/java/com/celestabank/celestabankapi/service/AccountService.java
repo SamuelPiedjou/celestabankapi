@@ -6,36 +6,37 @@ import com.celestabank.celestabankapi.entity.SavingAccount;
 import com.celestabank.celestabankapi.entity.Transaction;
 import com.celestabank.celestabankapi.exeption.BalanceNotSufficientException;
 import com.celestabank.celestabankapi.exeption.BankAccountNotFoundException;
+import com.celestabank.celestabankapi.exeption.CustomerNotFoundException;
 import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
 
 import java.util.List;
 
 public interface AccountService {
-    public List<Account> addAccount(Account account);
-    public List<SavingAccount> addSavingAccount(SavingAccount savingAccount);
-
-    public List<CurrentAccount> addCurrentAccount(CurrentAccount currentAccount);
-
-    public boolean deleteSavingId(long accountId) throws BankAccountNotFoundException, InvalidDetailsException;
-
-    public boolean deleteCurrentId(long accountId) throws InvalidDetailsException;
-
-    public Account getAccountById(long accountId) throws BankAccountNotFoundException;
-
-    public List<SavingAccount> updateSavingAccount(SavingAccount savingAccount);
-
-    public List<CurrentAccount> updateCurrentAccount(CurrentAccount currentAccount);
-
-    public Transaction withdraw(double amount, long accountId, long customerId, String password) throws BankAccountNotFoundException, BalanceNotSufficientException;
 
 
+
+    CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException;
+
+    SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException;
+
+    boolean deleteSavingId(long accountId) throws  InvalidDetailsException;
+
+    boolean deleteCurrentId(long accountId) throws InvalidDetailsException;
+
+    Account getBankAccount(long accountId) throws BankAccountNotFoundException;
+
+    SavingAccount updateSavingAccount(SavingAccount savingAccount);
+
+    CurrentAccount  updateCurrentAccount(CurrentAccount currentAccount);
+
+    boolean withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException;
 
     List<Account> viewAccounts(long accountId);
+    List<Account> viewSavingAcc(long customerId);
 
-    public List<Account> viewSavingAcc(long customerId);
+    List<Account> viewCurrentAcc(long customerId);
 
-    public List<Account> viewCurrentAcc(long customerId);
+    Transaction deposit(double amount, long accountId, String remark) throws BankAccountNotFoundException;
 
-    public Transaction deposit(double amount, long accountId) throws BankAccountNotFoundException;
-    public Transaction transfer(long senderAccountId, long reciverAccountId, double amount, long customerId, String password) throws BankAccountNotFoundException, BalanceNotSufficientException;
+    boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException;
 }

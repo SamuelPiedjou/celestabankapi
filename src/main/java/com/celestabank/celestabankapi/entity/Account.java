@@ -1,5 +1,6 @@
 package com.celestabank.celestabankapi.entity;
 
+import com.celestabank.celestabankapi.enums.AccountStatus;
 import com.celestabank.celestabankapi.enums.AccountType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -8,7 +9,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -17,27 +21,14 @@ import java.util.Set;
 @Entity
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long accountId;
-    private double interestRate;
     private double balance;
+    private Date createdAt;
     private AccountType accountType;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfOpening;
-
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
     @ManyToOne
     private Customer customer;
-
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    private Set<Souscrit> nominees;
-//
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    private Set<Beneficiary> beneficiaries;
-//    //
-//    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JsonIgnore
-//    private Set<Transaction> transaction;
+    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Transaction> accountOperations;
 }

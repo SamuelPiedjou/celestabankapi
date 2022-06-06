@@ -22,7 +22,8 @@ public class Beneficiary {
     private int beneficiaryAccNo;
     private String IFSC;
     private AccountType accountType;
-
+    @ManyToOne
+    private Customer customer;
     @ManyToOne
     @JsonIgnore
     @JoinColumn

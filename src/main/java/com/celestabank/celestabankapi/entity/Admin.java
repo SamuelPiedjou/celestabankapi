@@ -12,8 +12,6 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @Entity
 public class Admin extends User {
-
-    private  Long id;
     private String adminName;
     private String adminContact;
     private String adminEmailId;

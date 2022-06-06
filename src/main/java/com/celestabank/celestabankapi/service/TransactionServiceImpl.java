@@ -21,9 +21,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction createTransaction(Transaction transaction) {
-        Account a = new Account();
-        double balance = a.getBalance() +transaction.getAmount();
-        a.setBalance(balance);
         transactionRepository.saveAndFlush(transaction);
         return transaction;
     }

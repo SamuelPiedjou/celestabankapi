@@ -1,7 +1,6 @@
 package com.celestabank.celestabankapi.service;
 
 import com.celestabank.celestabankapi.entity.Customer;
-import com.celestabank.celestabankapi.exeption.CustomerNotFoundException;
 import com.celestabank.celestabankapi.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,24 +15,28 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository db;
     @Override
     public Customer addCustomer(Customer customer) {
+        log.info("AJout de : "+customer + "comme client effectué avec succès");
         Customer customer1 =db.save(customer);
         return customer1;
     }
 
     @Override
-    public Customer updateCustomer(Customer customer) {
-        Customer customer1 =db.save(customer);
-        return customer1;
+    public Customer updateCustomer(Customer customer)  {
+        log.info("Mise a jour des info du client : "+customer + "  effectué avec succès");
+         db.save(customer);
+        return customer;
     }
 
     @Override
-    public Customer deleteCustomer(long customerId) {
+    public boolean deleteCustomer(long customerId) {
+        log.info("Suppression du client  : "+customerId + "  effectué avec succès");
         db.deleteById(customerId);
-        return db.findById(customerId).get();
+        return true;
     }
 
     @Override
     public Customer findCustomerById(long customerId) {
+        log.info("Recherche du client  : "+customerId + "  effectué avec succès");
        Customer customer = db.findById(customerId).orElse(null);
         return customer;
     }

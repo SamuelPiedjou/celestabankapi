@@ -2,7 +2,6 @@ package com.celestabank.celestabankapi.entity;
 
 import com.celestabank.celestabankapi.enums.TransactionStatus;
 import com.celestabank.celestabankapi.enums.TransactionType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +25,6 @@ public class Transaction {
     private String transactionRemarks;
 
     @ManyToOne
-    @JoinColumn(name = "account_Id")
-    @JsonIgnore
+    @JoinColumn(name = "accountId")
     private Account account;
 }
