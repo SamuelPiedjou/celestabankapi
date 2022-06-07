@@ -31,7 +31,8 @@ public class AccountServiceImp implements AccountService {
     public CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId)  {
         log.info("CREATING ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
         Customer customer= customerRepository.findById(customerId).orElse(null);
-        if(customer==null) return  null;
+        if(customer != null && customer.getAccount()==null){
+
         CurrentAccount currentAccount=new CurrentAccount();
         currentAccount.setAccountId((long) (Math.random()*(9999999- 1)+0000001));
         currentAccount.setCreatedAt(new Date());
@@ -43,24 +44,29 @@ public class AccountServiceImp implements AccountService {
         CurrentAccount savedBankAccount = accountRepository.save(currentAccount);
         log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ currentAccount.getAccountId() +" and your balance id "+currentAccount.getBalance());
         return savedBankAccount;
+        }else new  CustomerAlreadyHaveAnAccountException("THE CUSTOMER "+ customer+" HAVE AN ACCOUNT !!!!");
+        return null;
     }
 
     @Override
     public SavingAccount saveSavingBankAccount(double initialBalance, long customerId)   {
         log.info("CREATING ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
         Customer customer= customerRepository.findById(customerId).orElse(null);
-        if(customer==null)return  null;
-        SavingAccount savingAccount=new SavingAccount();
-        savingAccount.setAccountId((long) (Math.random()*(9999999- 1)+0000001));
-        savingAccount.setCreatedAt(new Date());
-        savingAccount.setBalance(initialBalance);
-        savingAccount.setMinBalance( savingAccount.getMinBalance());
-        savingAccount.setCustomer(customer);
-        savingAccount.setAccountType(AccountType.SAV);
-        savingAccount.setAccountStatus(AccountStatus.CREATED);
-        SavingAccount savedBankAccount = accountRepository.save(savingAccount);
-        log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ savedBankAccount.getAccountId() +" and your balance id "+savedBankAccount.getBalance());
-        return savedBankAccount;
+        if(customer != null && customer.getAccount()==null){
+            SavingAccount savingAccount=new SavingAccount();
+            savingAccount.setAccountId((long) (Math.random()*(9999999- 1)+0000001));
+            savingAccount.setCreatedAt(new Date());
+            savingAccount.setBalance(initialBalance);
+            savingAccount.setMinBalance( savingAccount.getMinBalance());
+            savingAccount.setCustomer(customer);
+            savingAccount.setAccountType(AccountType.SAV);
+            savingAccount.setAccountStatus(AccountStatus.CREATED);
+            SavingAccount savedBankAccount = accountRepository.save(savingAccount);
+            log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ savedBankAccount.getAccountId() +" and your balance id "+savedBankAccount.getBalance());
+            return savedBankAccount;
+        }else new  CustomerAlreadyHaveAnAccountException("THE CUSTOMER "+ customer+" HAVE AN ACCOUNT !!!!");
+        return null;
+
     }
 
 
