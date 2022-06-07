@@ -15,9 +15,9 @@ public interface AccountService {
 
 
 
-    CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException;
+    CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId)  ;
 
-    SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException;
+    SavingAccount saveSavingBankAccount(double initialBalance, long customerId)  ;
 
     boolean deleteSavingId(long accountId) throws  InvalidDetailsException;
 
@@ -28,6 +28,8 @@ public interface AccountService {
     SavingAccount updateSavingAccount(SavingAccount savingAccount);
 
     CurrentAccount  updateCurrentAccount(CurrentAccount currentAccount);
+
+    double SoldeCompte(long accountId);
 
     boolean withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException;
 

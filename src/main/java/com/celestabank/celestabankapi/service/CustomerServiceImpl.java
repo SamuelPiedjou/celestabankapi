@@ -1,6 +1,8 @@
 package com.celestabank.celestabankapi.service;
 
 import com.celestabank.celestabankapi.entity.Customer;
+import com.celestabank.celestabankapi.exeption.CustomerAlreadyExistsException;
+import com.celestabank.celestabankapi.exeption.NoSuchCustomerExistsException;
 import com.celestabank.celestabankapi.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,31 +16,63 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository db;
     @Override
-    public Customer addCustomer(Customer customer) {
-        log.info("AJout de : "+customer + "comme client effectué avec succès");
-        Customer customer1 =db.save(customer);
-        return customer1;
+    public Customer addCustomer(Customer customer)  {
+        Customer existingCustomer
+                = db.findById(customer.getUserId())
+                .orElse(null);
+        if (existingCustomer == null) {
+            db.save(customer);
+            return  customer;
+        }else if( existingCustomer.getEmailId().equals(customer.getEmailId())) throw new CustomerAlreadyExistsException("Customer already exixts!!");
+        else throw new CustomerAlreadyExistsException("Customer already exixts!!");
+
     }
 
     @Override
     public Customer updateCustomer(Customer customer)  {
-        log.info("Mise a jour des info du client : "+customer + "  effectué avec succès");
-         db.save(customer);
-        return customer;
+        Customer existingCustomer
+                = db.findById(customer.getUserId())
+                .orElse(null);
+        if (existingCustomer == null)
+            throw new NoSuchCustomerExistsException(
+                    "No Such Customer Exists!!");
+        else {
+
+            db.save(existingCustomer);
+            return existingCustomer;
+        }
     }
 
     @Override
     public boolean deleteCustomer(long customerId) {
         log.info("Suppression du client  : "+customerId + "  effectué avec succès");
-        db.deleteById(customerId);
-        return true;
+        Customer existingCustomer
+                = db.findById(customerId)
+                .orElse(null);
+        if (existingCustomer == null)
+            throw new NoSuchCustomerExistsException(
+                    "No Such Customer Exists!!");
+        else {
+
+            db.deleteById(customerId);
+            return true;
+        }
     }
 
     @Override
     public Customer findCustomerById(long customerId) {
         log.info("Recherche du client  : "+customerId + "  effectué avec succès");
-       Customer customer = db.findById(customerId).orElse(null);
-        return customer;
+        Customer existingCustomer
+                = db.findById(customerId)
+                .orElse(null);
+        if (existingCustomer == null)
+            throw new NoSuchCustomerExistsException(
+                    "No Such Customer Exists!!");
+        else {
+
+            db.findById(customerId);
+            return existingCustomer;
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.List;
 
@@ -22,9 +23,8 @@ public class Customer extends  User {
     private int age;
     private Gender gender;
     @OneToMany(mappedBy = "customer")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Account> account;
-    @OneToMany(mappedBy = "customer")
-    @JsonIgnore
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Beneficiary> beneficiaries;
 }

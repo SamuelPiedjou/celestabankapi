@@ -9,15 +9,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 @Slf4j
 @AllArgsConstructor
+@Transactional
 public class TransactionServiceImpl implements TransactionService {
 
     private TransactionRepository transactionRepository;
-    private AccountRepository accountRepository;
 
     @Override
     public Transaction createTransaction(Transaction transaction) {

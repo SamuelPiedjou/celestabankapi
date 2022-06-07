@@ -15,16 +15,16 @@ import java.time.LocalDateTime;
 @Data
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long transactionId;
     private double amount;
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     private LocalDateTime dateTime;
-
+    @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
     private String transactionRemarks;
 
     @ManyToOne
-    @JoinColumn(name = "accountId")
     private Account account;
 }
