@@ -5,10 +5,7 @@ import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
 import com.celestabank.celestabankapi.entity.Transaction;
-import com.celestabank.celestabankapi.exeption.BalanceNotSufficientException;
-import com.celestabank.celestabankapi.exeption.BankAccountNotFoundException;
-import com.celestabank.celestabankapi.exeption.InvalidAccountException;
-import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
+import com.celestabank.celestabankapi.exeption.*;
 import com.celestabank.celestabankapi.service.AccountServiceImp;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +28,8 @@ public class AccountController {
             t = accountServiceImp.saveSavingBankAccount(savingAccount.getInitialBalance(), savingAccount.getCustomerId());
         }catch (RuntimeException e){
            e.printStackTrace();
+           throw new CustomerNotFoundException("Customer not found") ;
+
         }
         return  t;
 
@@ -53,7 +52,7 @@ public class AccountController {
             try{
                 accountServiceImp.deleteSavingId(accountId);
                 return  true;
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 e.printStackTrace();
             }
         }
@@ -66,7 +65,7 @@ public class AccountController {
             try{
                 accountServiceImp.deleteCurrentId(accountId);
                 return true;
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                  e.printStackTrace();
             }
         }
@@ -83,7 +82,7 @@ public class AccountController {
         SavingAccount t = null;
         try {
             t = accountServiceImp.updateSavingAccount(updS);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new InvalidDetailsException("Invalid details kindly check! !");
         }
         return t;
