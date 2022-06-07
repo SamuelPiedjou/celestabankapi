@@ -29,7 +29,7 @@ public class AccountController {
         SavingAccount t = null;
         try{
             t = accountServiceImp.saveSavingBankAccount(savingAccount.getInitialBalance(), savingAccount.getCustomerId());
-        }catch (Exception e){
+        }catch (RuntimeException e){
            e.printStackTrace();
         }
         return  t;
@@ -41,7 +41,7 @@ public class AccountController {
          CurrentAccount t = null;
         try{
             t = accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getInitialBalance(), currentAccountDTO.getCustomerId());
-        }catch (Exception e){
+        }catch (RuntimeException e){
              e.printStackTrace();
         }
         return  t;
