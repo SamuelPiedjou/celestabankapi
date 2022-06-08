@@ -16,7 +16,7 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository db;
     @Override
-    public Customer addCustomer(Customer customer)  {
+    public Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException {
         Customer existingCustomer
                 = db.findById(customer.getUserId())
                 .orElse(null);
@@ -29,7 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer updateCustomer(Customer customer)  {
+    public Customer updateCustomer(Customer customer) throws NoSuchCustomerExistsException {
         Customer existingCustomer
                 = db.findById(customer.getUserId())
                 .orElse(null);
@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public boolean deleteCustomer(long customerId) {
+    public boolean deleteCustomer(long customerId) throws NoSuchCustomerExistsException {
         log.info("Suppression du client  : "+customerId + "  effectué avec succès");
         Customer existingCustomer
                 = db.findById(customerId)
@@ -60,7 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer findCustomerById(long customerId) {
+    public Customer findCustomerById(long customerId) throws NoSuchCustomerExistsException {
         log.info("Recherche du client  : "+customerId + "  effectué avec succès");
         Customer existingCustomer
                 = db.findById(customerId)

@@ -14,5 +14,4 @@ import javax.persistence.Entity;
 public class CurrentAccount extends  Account {
 
     private double overDraft =2000;
-    private AccountStatus accountStatus;
 }

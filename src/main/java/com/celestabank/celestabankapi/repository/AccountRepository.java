@@ -13,5 +13,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("select a from Account a where a.accountType = 0 and a.customer.UserId=:id")
     public List<Account> viewSavingAcc(@Param("id") long id);
     @Query("select a from Account a where a.accountType = 1 and a.customer.UserId=:id")
-    public List<Account> viewTermAcc(@Param("id") long id);
+    public Account viewTermAcc(@Param("id") long id);
 }

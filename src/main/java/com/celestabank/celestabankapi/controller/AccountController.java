@@ -26,21 +26,19 @@ public class AccountController {
         SavingAccount t = null;
         try{
             t = accountServiceImp.saveSavingBankAccount(savingAccount.getInitialBalance(), savingAccount.getCustomerId());
-        }catch (RuntimeException e){
+        }catch (RuntimeException | CustomerNotFoundException e){
            e.printStackTrace();
-           throw new CustomerNotFoundException("Customer not found") ;
-
         }
         return  t;
 
     }
 
     @PostMapping("/current")
-    public CurrentAccount addCurrentAcc(@RequestBody CurrentAccountDTO currentAccountDTO)   {
+    public CurrentAccount addCurrentAcc(@RequestBody CurrentAccountDTO currentAccountDTO) throws CustomerNotFoundException, CustomerAlreadyHaveAnAccountException  {
          CurrentAccount t = null;
         try{
             t = accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getInitialBalance(), currentAccountDTO.getCustomerId());
-        }catch (RuntimeException e){
+        }catch (RuntimeException | CustomerNotFoundException | CustomerAlreadyHaveAnAccountException e){
              e.printStackTrace();
         }
         return  t;
@@ -52,7 +50,7 @@ public class AccountController {
             try{
                 accountServiceImp.deleteSavingId(accountId);
                 return  true;
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | InvalidDetailsException e) {
                 e.printStackTrace();
             }
         }
@@ -65,7 +63,7 @@ public class AccountController {
             try{
                 accountServiceImp.deleteCurrentId(accountId);
                 return true;
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | InvalidDetailsException e) {
                  e.printStackTrace();
             }
         }
@@ -89,7 +87,7 @@ public class AccountController {
     }
 
     @PutMapping("/update/current")
-    public CurrentAccount updateTermAccount(@RequestBody CurrentAccount updT) throws InvalidDetailsException {
+    public CurrentAccount updateCurrentAccount(@RequestBody CurrentAccount updT) throws InvalidDetailsException {
         CurrentAccount t = null;
         try {
             t = accountServiceImp.updateCurrentAccount(updT);
@@ -99,27 +97,28 @@ public class AccountController {
         return t;
     }
 
+
     @PostMapping("/accounts/deposit")
     public Transaction deposit(@RequestBody DepositDTO depositDTO )   {
         Transaction t = null;
         try{
-           return accountServiceImp.deposit(depositDTO.getAmount(), depositDTO.getAccountId(),depositDTO.getRemark());
+           return accountServiceImp.deposit( depositDTO.getAccountId(),depositDTO.getAmount(),depositDTO.getRemark());
 
-        }catch(RuntimeException e){
+        }catch(RuntimeException | BankAccountNotFoundException e){
             e.printStackTrace();
         }
         return  t;
     }
 
-    @PostMapping("/withdraw/{accountId}")
-    public boolean withdraw(@RequestBody WithdrawlDTO withdrawlDTO )   {
+    @PostMapping("/withdraw/")
+    public Transaction withdraw(@RequestBody WithdrawlDTO withdrawlDTO )   {
         Transaction t = null;
         try{
             return accountServiceImp.withdraw(withdrawlDTO.getAmount(), withdrawlDTO.getAccountId(), withdrawlDTO.getRemark());
-        }catch(RuntimeException e){
+        }catch(RuntimeException | BankAccountNotFoundException e){
             e.getMessage();
         }
-        return  false;
+        return  t;
 
     }
 
@@ -137,17 +136,18 @@ public class AccountController {
     }
 
     @GetMapping("findSaving/{customerId}")
-    public List<Account> viewSavingAccount(@PathVariable long customerId) {
+    public Account viewSavingAccount(@PathVariable long customerId) {
 
-        try{ return accountServiceImp.viewSavingAcc(customerId);
+        try{
+            return (Account) accountServiceImp.viewSavingAcc(customerId);
         }catch (RuntimeException e){
             e.printStackTrace();
         }
         return null;
     }
 
-    @GetMapping("findTerm/{customerId}")
-    public List<Account> viewTermAccount(@PathVariable long customerId) {
+    @GetMapping("findCurrent/{customerId}")
+    public Account viewCurrentAccount(@PathVariable long customerId) {
 
         try{
             return accountServiceImp.viewCurrentAcc(customerId);

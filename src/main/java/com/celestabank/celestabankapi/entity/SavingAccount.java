@@ -13,6 +13,5 @@ import javax.persistence.Entity;
 @Entity
 public class SavingAccount extends  Account {
     private double minBalance= 2000;
-    private AccountStatus accountStatus;
     private double interestRate =5.5;
 }
