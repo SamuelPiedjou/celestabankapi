@@ -5,6 +5,7 @@ import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
 import com.celestabank.celestabankapi.entity.Transaction;
+import com.celestabank.celestabankapi.enums.AccountStatus;
 import com.celestabank.celestabankapi.exeption.*;
 import com.celestabank.celestabankapi.service.AccountServiceImp;
 import lombok.AllArgsConstructor;
@@ -116,11 +117,35 @@ public class AccountController {
         try{
             return accountServiceImp.withdraw(withdrawlDTO.getAmount(), withdrawlDTO.getAccountId(), withdrawlDTO.getRemark());
         }catch(RuntimeException | BankAccountNotFoundException e){
-            e.getMessage();
+            e.printStackTrace();
         }
         return  t;
 
     }
+    
+    @PutMapping("/suspend/{accoountId}")
+    public AccountStatus suspendAcc(@PathVariable long accoountId)   {
+        AccountStatus status= AccountStatus.CRT;
+        try{
+            status= accountServiceImp.suspendAccount(accoountId);
+        }catch (RuntimeException | BankAccountNotFoundException e){
+            e.printStackTrace();
+            
+        }
+        return  status;
+    }
+    @PutMapping("/activeAcc/{accoountId}")
+    public AccountStatus activate(@PathVariable long accoountId)   {
+        AccountStatus status= AccountStatus.CRT;
+        try{
+            status= accountServiceImp.activateAccount(accoountId);
+        }catch (RuntimeException | BankAccountNotFoundException e){
+            e.printStackTrace();
+
+        }
+        return  status;
+    }
+
 
     @GetMapping("find/{customerId}")
     public List<Account> viewAccount(@PathVariable long customerId) throws InvalidDetailsException {

@@ -159,7 +159,7 @@ public class AccountServiceImp implements AccountService {
         Account account =getBankAccount(accountId);
         account.setAccountStatus(AccountStatus.ACT);
         accountRepository.saveAndFlush(account);
-        log.info("THIS ACCOUNT IS ACTIVATED");
+        log.info("THIS ACCOUNT WAS ACTIVATED");
         return account.getAccountStatus();
     }
     @Override
@@ -167,7 +167,7 @@ public class AccountServiceImp implements AccountService {
         Account account =getBankAccount(accountId);
         account.setAccountStatus(AccountStatus.SUS);
         accountRepository.saveAndFlush(account);
-        log.info("THIS ACCOUNT IS ACTIVATED");
+        log.info("THIS ACCOUNT WAS SUSPENDED");
         return account.getAccountStatus();
     }
 
