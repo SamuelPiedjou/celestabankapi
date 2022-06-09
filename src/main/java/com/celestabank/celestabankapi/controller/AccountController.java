@@ -25,50 +25,29 @@ public class AccountController {
     @PostMapping("/savings")
     public SavingAccount addSavingAcc(@RequestBody SavingAccountDTO savingAccount) {
         SavingAccount t = null;
-        try{
             t = accountServiceImp.saveSavingBankAccount(savingAccount.getInitialBalance(), savingAccount.getCustomerId());
-        }catch (RuntimeException e){
-           e.printStackTrace();
-        }
-        return  t;
+            return  t;
 
     }
 
     @PostMapping("/current")
     public CurrentAccount addCurrentAcc(@RequestBody CurrentAccountDTO currentAccountDTO) throws CustomerNotFoundException, CustomerAlreadyHaveAnAccountException  {
          CurrentAccount t = null;
-        try{
             t = accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getInitialBalance(), currentAccountDTO.getCustomerId());
-        }catch (RuntimeException e){
-             e.printStackTrace();
-        }
-        return  t;
+           return  t;
     }
 
     @DeleteMapping("/closeSavingAcc/{accountId}")
     public boolean closeSavingAcc(@PathVariable long accountId)   {
-        if (accountId !=0){
-            try{
-                accountServiceImp.deleteSavingId(accountId);
+        if (accountId !=0)accountServiceImp.deleteSavingId(accountId);
                 return  true;
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
     }
 
     @DeleteMapping("/closeCurrentAcc/{accountId}")
     public boolean closeCurrentAcc(@PathVariable long accountId)   {
-        if (accountId !=0){
-            try{
-                accountServiceImp.deleteCurrentId(accountId);
+        if (accountId !=0) accountServiceImp.deleteCurrentId(accountId);
                 return true;
-            } catch (RuntimeException e) {
-                 e.printStackTrace();
-            }
-        }
-        return false;
+
     }
 
     @GetMapping("/findAcc/{accountId}")
