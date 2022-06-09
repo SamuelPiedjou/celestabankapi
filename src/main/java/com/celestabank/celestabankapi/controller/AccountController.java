@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AccountController {
 
-    AccountServiceImp   accountServiceImp;
+    private final AccountServiceImp   accountServiceImp;
 
 
 

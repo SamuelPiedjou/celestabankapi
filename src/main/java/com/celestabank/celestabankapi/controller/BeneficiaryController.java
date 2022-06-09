@@ -14,7 +14,7 @@ import java.util.Set;
 @RestController
 @AllArgsConstructor
 public class BeneficiaryController {
-    BeneficiaryServiceImpl beneficiaryService;
+    private final BeneficiaryServiceImpl beneficiaryService;
     @PostMapping("/add")
     public Beneficiary addBeneficiary(@RequestBody Beneficiary beneficiary) throws InvalidDetailsException {
         Beneficiary n = null;

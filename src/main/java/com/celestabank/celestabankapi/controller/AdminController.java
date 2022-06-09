@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AdminController {
 
-    AdminServiceImpl adminService;
+    private final AdminServiceImpl adminService;
 
     @PostMapping("/add")
     public Admin addAdmin(@RequestBody Admin admin) throws InvalidDetailsException {
