@@ -200,6 +200,7 @@ public class AccountServiceImp implements AccountService {
                 t.setTransactionType(TransactionType.CREDIT);
                 t.setTransactionRemarks(remark);
                 t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
+                t.setAccountId(accountId);
                 transactionService.createTransaction(t);
                 log.info("OPERATION SUCCESSFUL");
                 return t;
@@ -211,7 +212,7 @@ public class AccountServiceImp implements AccountService {
                 t.setDateTime(LocalDateTime.now());
                 t.setTransactionType(TransactionType.CREDIT);
                 t.setTransactionRemarks(remark);
-                t.setAccount(a);
+                t.setAccountId(accountId);
                 t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
                 transactionService.createTransaction(t);
                 log.info("OPERATION OF CASH_IN SUCCESSFUL");
@@ -239,7 +240,7 @@ public class AccountServiceImp implements AccountService {
                         t.setDateTime(LocalDateTime.now());
                         t.setTransactionType(TransactionType.DEBIT);
                         t.setTransactionRemarks(remark);
-                        t.setAccount(a);
+                        t.setAccountId(accountId);
                         t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
                         transactionService.createTransaction(t);
                         log.info("OPERATION OF CASH_OUT SUCCESSFUL");
@@ -251,7 +252,7 @@ public class AccountServiceImp implements AccountService {
                         t.setDateTime(LocalDateTime.now());
                         t.setTransactionType(TransactionType.DEBIT);
                         t.setTransactionRemarks(remark);
-                        t.setAccount(a);
+                        t.setAccountId(accountId);
                         t.setTransactionStatus(TransactionStatus.FAILED);
                         transactionService.createTransaction(t);
                         return t;
@@ -273,7 +274,7 @@ public class AccountServiceImp implements AccountService {
                         t.setTransactionType(TransactionType.DEBIT);
                         t.setTransactionRemarks("CASH_OUT OF " + amount);
                         t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
-                        t.setAccount(a);
+                        t.setAccountId(accountId);
                         transactionService.createTransaction(t);
                         log.info("OPERATION OF CASH_OUT SUCCESSFUL");
                         return t;
@@ -284,7 +285,7 @@ public class AccountServiceImp implements AccountService {
                         t.setTransactionType(TransactionType.DEBIT);
                         t.setTransactionRemarks(remark);
                         t.setTransactionStatus(TransactionStatus.FAILED);
-                        t.setAccount(a);
+                        t.setAccountId(accountId);
                         transactionService.createTransaction(t);
                         log.info("BALANCE NOT SUFFICIENT");
                         return t;

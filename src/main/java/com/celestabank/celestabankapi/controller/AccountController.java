@@ -27,7 +27,7 @@ public class AccountController {
         SavingAccount t = null;
         try{
             t = accountServiceImp.saveSavingBankAccount(savingAccount.getInitialBalance(), savingAccount.getCustomerId());
-        }catch (RuntimeException | CustomerNotFoundException e){
+        }catch (RuntimeException e){
            e.printStackTrace();
         }
         return  t;
@@ -39,7 +39,7 @@ public class AccountController {
          CurrentAccount t = null;
         try{
             t = accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getInitialBalance(), currentAccountDTO.getCustomerId());
-        }catch (RuntimeException | CustomerNotFoundException | CustomerAlreadyHaveAnAccountException e){
+        }catch (RuntimeException e){
              e.printStackTrace();
         }
         return  t;
@@ -51,7 +51,7 @@ public class AccountController {
             try{
                 accountServiceImp.deleteSavingId(accountId);
                 return  true;
-            } catch (RuntimeException | InvalidDetailsException e) {
+            } catch (RuntimeException e) {
                 e.printStackTrace();
             }
         }
@@ -64,7 +64,7 @@ public class AccountController {
             try{
                 accountServiceImp.deleteCurrentId(accountId);
                 return true;
-            } catch (RuntimeException | InvalidDetailsException e) {
+            } catch (RuntimeException e) {
                  e.printStackTrace();
             }
         }
@@ -105,7 +105,7 @@ public class AccountController {
         try{
            return accountServiceImp.deposit( depositDTO.getAccountId(),depositDTO.getAmount(),depositDTO.getRemark());
 
-        }catch(RuntimeException | BankAccountNotFoundException e){
+        }catch(RuntimeException e){
             e.printStackTrace();
         }
         return  t;
@@ -116,7 +116,7 @@ public class AccountController {
         Transaction t = null;
         try{
             return accountServiceImp.withdraw(withdrawlDTO.getAmount(), withdrawlDTO.getAccountId(), withdrawlDTO.getRemark());
-        }catch(RuntimeException | BankAccountNotFoundException | BankAccountNotActivatedException | BankAccountSuspendedException e){
+        }catch(RuntimeException e){
             e.printStackTrace();
         }
         return  t;
@@ -128,7 +128,7 @@ public class AccountController {
         AccountStatus status= AccountStatus.CRT;
         try{
             status= accountServiceImp.suspendAccount(accoountId);
-        }catch (RuntimeException | BankAccountNotFoundException e){
+        }catch (RuntimeException e){
             e.printStackTrace();
             
         }
@@ -139,7 +139,7 @@ public class AccountController {
         AccountStatus status= AccountStatus.CRT;
         try{
             status= accountServiceImp.activateAccount(accoountId);
-        }catch (RuntimeException | BankAccountNotFoundException e){
+        }catch (RuntimeException e){
             e.printStackTrace();
 
         }
@@ -183,7 +183,7 @@ public class AccountController {
     }
 
     @PostMapping("transfer")
-    public boolean transferMoney(@RequestBody TransferDTO transferDTO) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException {
+    public boolean transferMoney(@RequestBody TransferDTO transferDTO) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException {
         return accountServiceImp.transfer(transferDTO.getSender(), transferDTO.getReceiver(), transferDTO.getAmount());
     }
 
