@@ -1,14 +1,15 @@
 package com.celestabank.celestabankapi.service;
 
 import com.celestabank.celestabankapi.entity.Admin;
+import com.celestabank.celestabankapi.exeption.AdminNotFoundException;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 
 public interface AdminService {
-    public List<Admin> addAdmin(Admin admin);
-    public List<Admin> updateAdmin(Admin admin);
-    public List<Admin> deleteAdmin(long adminId);
+    public Admin addAdmin(Admin admin);
+    public Admin updateAdmin(Admin admin) throws AdminNotFoundException;
+    public boolean deleteAdmin(long adminId);
     public Admin findAdminById(long adminId) throws AccountNotFoundException;
     public List<Admin>listAllAdmin();
 }

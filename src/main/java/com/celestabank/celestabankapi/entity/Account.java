@@ -1,43 +1,32 @@
 package com.celestabank.celestabankapi.entity;
 
+import com.celestabank.celestabankapi.enums.AccountStatus;
 import com.celestabank.celestabankapi.enums.AccountType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.Set;
-
+import java.util.Date;
+import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long accountId;
-    private double interestRate;
     private double balance;
+    private Date createdAt;
+    private AccountStatus accountStatus;
+    @Enumerated(EnumType.STRING)
     private AccountType accountType;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfOpening;
-
     @ManyToOne
     private Customer customer;
-
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    private Set<Souscrit> nominees;
-//
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    private Set<Beneficiary> beneficiaries;
-//    //
-//    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JsonIgnore
-//    private Set<Transaction> transaction;
+    @OneToMany(mappedBy = "account",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Transaction> accountOperations;
 }

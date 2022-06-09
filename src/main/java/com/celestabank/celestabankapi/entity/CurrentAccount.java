@@ -13,8 +13,5 @@ import javax.persistence.Entity;
 @Data
 public class CurrentAccount extends  Account {
 
-    private double amount;
-    private  int months;
-    private double penaltyAmount;
-    private AccountStatus accountStatus;
+    private double overDraft =2000;
 }

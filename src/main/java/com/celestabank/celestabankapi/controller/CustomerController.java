@@ -15,37 +15,37 @@ import java.util.List;
 public class CustomerController {
     CustomerServiceImpl customerService;
     @PostMapping("/add")
-    public Customer addCustomer(@RequestBody Customer customer) throws InvalidDetailsException {
+    public Customer addCustomer(@RequestBody Customer customer){
         Customer n = null;
         try {
             n = customerService.addCustomer(customer);
         } catch (Exception e) {
-            throw new InvalidDetailsException("The details given are not valid!");
+            e.getMessage();
         }
         return n;
 
     }
 
     @PutMapping("/update")
-    public Customer updateCustomer(@RequestBody Customer customer) throws InvalidDetailsException {
+    public Customer updateCustomer(@RequestBody Customer customer)  {
         Customer n = null;
         try {
-            n = customerService.updateCustomer(customer);
+            n = customerService.addCustomer(customer);
         } catch (Exception e) {
-            throw new InvalidDetailsException("The details given are not valid!");
+            e.getMessage();
         }
         return n;
     }
 
     @DeleteMapping("/delete/{customerId}")
-    public Customer deleteCustomer(@PathVariable long customerId) throws DetailsNotFoundException {
-        Customer n = null;
+    public boolean deleteCustomer(@PathVariable long customerId)   {
+        boolean n = false;
         try {
-            n = customerService.deleteCustomer(customerId);
+             customerService.deleteCustomer(customerId);
         } catch (Exception e) {
-            throw new DetailsNotFoundException("The given ID is not found!");
+            e.printStackTrace();
         }
-        return n;
+        return true;
 
     }
 
@@ -60,4 +60,16 @@ public class CustomerController {
         return n;
 
     }
+    @GetMapping("/allCust")
+    public List<Customer> allCust()  {
+        List<Customer> n = null;
+        try {
+            n = customerService.getAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return n;
+
+    }
+
 }

@@ -1,76 +1,71 @@
 package com.celestabank.celestabankapi.controller;
 
+import com.celestabank.celestabankapi.dto.*;
 import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
 import com.celestabank.celestabankapi.entity.Transaction;
-import com.celestabank.celestabankapi.exeption.BalanceNotSufficientException;
-import com.celestabank.celestabankapi.exeption.BankAccountNotFoundException;
-import com.celestabank.celestabankapi.exeption.InvalidAccountException;
-import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
+import com.celestabank.celestabankapi.enums.AccountStatus;
+import com.celestabank.celestabankapi.exeption.*;
 import com.celestabank.celestabankapi.service.AccountServiceImp;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/accounts")
 @AllArgsConstructor
 public class AccountController {
 
     AccountServiceImp   accountServiceImp;
 
-    @PostMapping("/add")
-    public List<Account> addAccount(@RequestBody Account account){
-        return accountServiceImp.addAccount(account);
-    }
+
 
     @PostMapping("/savings")
-    public List<SavingAccount> addSavingAcc(@RequestBody SavingAccount savingAccount) throws InvalidDetailsException {
-        List<SavingAccount> t = null;
+    public SavingAccount addSavingAcc(@RequestBody SavingAccountDTO savingAccount) {
+        SavingAccount t = null;
         try{
-            t = accountServiceImp.addSavingAccount(savingAccount);
-        }catch (Exception e){
-            throw new InvalidDetailsException("INVALID ENTRY DATA");
+            t = accountServiceImp.saveSavingBankAccount(savingAccount.getInitialBalance(), savingAccount.getCustomerId());
+        }catch (RuntimeException | CustomerNotFoundException e){
+           e.printStackTrace();
         }
         return  t;
 
     }
 
     @PostMapping("/current")
-    public List<CurrentAccount> addCurrentAcc(@RequestBody CurrentAccount currentAccount) throws InvalidDetailsException {
-        List<CurrentAccount> t = null;
+    public CurrentAccount addCurrentAcc(@RequestBody CurrentAccountDTO currentAccountDTO) throws CustomerNotFoundException, CustomerAlreadyHaveAnAccountException  {
+         CurrentAccount t = null;
         try{
-            t = accountServiceImp.addCurrentAccount(currentAccount);
-        }catch (Exception e){
-            throw new InvalidDetailsException("INVALID ENTRY DATA");
+            t = accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getInitialBalance(), currentAccountDTO.getCustomerId());
+        }catch (RuntimeException | CustomerNotFoundException | CustomerAlreadyHaveAnAccountException e){
+             e.printStackTrace();
         }
         return  t;
     }
 
     @DeleteMapping("/closeSavingAcc/{accountId}")
-    public boolean closeSavingAcc(@PathVariable long accountId) throws InvalidAccountException {
+    public boolean closeSavingAcc(@PathVariable long accountId)   {
         if (accountId !=0){
             try{
                 accountServiceImp.deleteSavingId(accountId);
                 return  true;
-            } catch (Exception e) {
-                throw new InvalidAccountException("IMPOSSIBLE DE SUPPRIMER CE COMPTE");
+            } catch (RuntimeException | InvalidDetailsException e) {
+                e.printStackTrace();
             }
         }
         return false;
     }
 
     @DeleteMapping("/closeCurrentAcc/{accountId}")
-    public boolean closeCurrentAcc(@PathVariable long accountId) throws InvalidAccountException {
+    public boolean closeCurrentAcc(@PathVariable long accountId)   {
         if (accountId !=0){
             try{
                 accountServiceImp.deleteCurrentId(accountId);
                 return true;
-            } catch (Exception e) {
-                throw new InvalidAccountException("IMPOSSIBLE DE SUPPRIMER CE COMPTE");
+            } catch (RuntimeException | InvalidDetailsException e) {
+                 e.printStackTrace();
             }
         }
         return false;
@@ -78,23 +73,23 @@ public class AccountController {
 
     @GetMapping("/findAcc/{accountId}")
     public Account findAccount(@PathVariable long accountId) throws BankAccountNotFoundException {
-        return  accountServiceImp.getAccountById(accountId);
+        return  accountServiceImp.getBankAccount(accountId);
     }
 
     @PutMapping("/update/saving")
-    public List<SavingAccount> updateSavingsAccount(@RequestBody SavingAccount updS) throws InvalidDetailsException {
-        List<SavingAccount> t = null;
+    public SavingAccount updateSavingsAccount(@RequestBody SavingAccount updS) throws InvalidDetailsException {
+        SavingAccount t = null;
         try {
             t = accountServiceImp.updateSavingAccount(updS);
-        } catch (Exception e) {
-            throw new InvalidDetailsException("RE-VERIFIER LES INFORMATIONS !");
+        } catch (RuntimeException e) {
+            throw new InvalidDetailsException("Invalid details kindly check! !");
         }
         return t;
     }
 
-    @PutMapping("/update/term")
-    public List<CurrentAccount> updateTermAccount(@RequestBody CurrentAccount updT) throws InvalidDetailsException {
-        List<CurrentAccount> t = null;
+    @PutMapping("/update/current")
+    public CurrentAccount updateCurrentAccount(@RequestBody CurrentAccount updT) throws InvalidDetailsException {
+        CurrentAccount t = null;
         try {
             t = accountServiceImp.updateCurrentAccount(updT);
         } catch (Exception e) {
@@ -103,18 +98,54 @@ public class AccountController {
         return t;
     }
 
-    @PostMapping("/deposit/{accountId}")
-    public Transaction deposit(@PathVariable long accountId, @RequestBody double amount ) throws BankAccountNotFoundException {
-        return accountServiceImp.deposit(amount, accountId);
 
+    @PostMapping("/accounts/deposit")
+    public Transaction deposit(@RequestBody DepositDTO depositDTO )   {
+        Transaction t = null;
+        try{
+           return accountServiceImp.deposit( depositDTO.getAccountId(),depositDTO.getAmount(),depositDTO.getRemark());
+
+        }catch(RuntimeException | BankAccountNotFoundException e){
+            e.printStackTrace();
+        }
+        return  t;
     }
 
-    @PostMapping("/withdraw/{accountId}")
-    public Transaction withdraw(@PathVariable long accountId, @RequestBody double amount, long customerId,
-                                String password) throws BankAccountNotFoundException, BalanceNotSufficientException {
-        return accountServiceImp.withdraw(amount, accountId, customerId, password);
+    @PostMapping("/withdraw/")
+    public Transaction withdraw(@RequestBody WithdrawlDTO withdrawlDTO )   {
+        Transaction t = null;
+        try{
+            return accountServiceImp.withdraw(withdrawlDTO.getAmount(), withdrawlDTO.getAccountId(), withdrawlDTO.getRemark());
+        }catch(RuntimeException | BankAccountNotFoundException e){
+            e.printStackTrace();
+        }
+        return  t;
 
     }
+    
+    @PutMapping("/suspend/{accoountId}")
+    public AccountStatus suspendAcc(@PathVariable long accoountId)   {
+        AccountStatus status= AccountStatus.CRT;
+        try{
+            status= accountServiceImp.suspendAccount(accoountId);
+        }catch (RuntimeException | BankAccountNotFoundException e){
+            e.printStackTrace();
+            
+        }
+        return  status;
+    }
+    @PutMapping("/activeAcc/{accoountId}")
+    public AccountStatus activate(@PathVariable long accoountId)   {
+        AccountStatus status= AccountStatus.CRT;
+        try{
+            status= accountServiceImp.activateAccount(accoountId);
+        }catch (RuntimeException | BankAccountNotFoundException e){
+            e.printStackTrace();
+
+        }
+        return  status;
+    }
+
 
     @GetMapping("find/{customerId}")
     public List<Account> viewAccount(@PathVariable long customerId) throws InvalidDetailsException {
@@ -130,22 +161,30 @@ public class AccountController {
     }
 
     @GetMapping("findSaving/{customerId}")
-    public List<Account> viewSavingAccount(@PathVariable long customerId) {
+    public Account viewSavingAccount(@PathVariable long customerId) {
 
-        return accountServiceImp.viewSavingAcc(customerId);
-
+        try{
+            return (Account) accountServiceImp.viewSavingAcc(customerId);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    @GetMapping("findTerm/{customerId}")
-    public List<Account> viewTermAccount(@PathVariable long customerId) {
+    @GetMapping("findCurrent/{customerId}")
+    public Account viewCurrentAccount(@PathVariable long customerId) {
 
-        return accountServiceImp.viewCurrentAcc(customerId);
-
+        try{
+            return accountServiceImp.viewCurrentAcc(customerId);
+        }catch(RuntimeException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @PostMapping("transfer")
-    public Transaction transferMoney(@RequestBody long senderAccountId,long reciverAccountId, double amount,long customerId, String password) throws BankAccountNotFoundException, BalanceNotSufficientException {
-        return accountServiceImp.transfer(senderAccountId, reciverAccountId, amount, customerId, password);
+    public boolean transferMoney(@RequestBody TransferDTO transferDTO) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException {
+        return accountServiceImp.transfer(transferDTO.getSender(), transferDTO.getReceiver(), transferDTO.getAmount());
     }
 
 }

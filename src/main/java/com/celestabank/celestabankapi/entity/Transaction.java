@@ -2,7 +2,6 @@ package com.celestabank.celestabankapi.entity;
 
 import com.celestabank.celestabankapi.enums.TransactionStatus;
 import com.celestabank.celestabankapi.enums.TransactionType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,17 +15,16 @@ import java.time.LocalDateTime;
 @Data
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long transactionId;
     private double amount;
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     private LocalDateTime dateTime;
-
+    @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
     private String transactionRemarks;
 
     @ManyToOne
-    @JoinColumn(name = "account_Id")
-    @JsonIgnore
     private Account account;
 }

@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Slf4j
 public class BeneficiaryServiceImpl implements BeneficiaryService {
-    BeneficiaryRepository db;
+     private BeneficiaryRepository db;
     @Override
     public Beneficiary addBeneficiary(Beneficiary beneficiary) {
         db.save(beneficiary );
