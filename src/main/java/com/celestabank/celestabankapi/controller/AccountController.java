@@ -116,7 +116,7 @@ public class AccountController {
         Transaction t = null;
         try{
             return accountServiceImp.withdraw(withdrawlDTO.getAmount(), withdrawlDTO.getAccountId(), withdrawlDTO.getRemark());
-        }catch(RuntimeException | BankAccountNotFoundException e){
+        }catch(RuntimeException | BankAccountNotFoundException | BankAccountNotActivatedException | BankAccountSuspendedException e){
             e.printStackTrace();
         }
         return  t;
@@ -183,7 +183,7 @@ public class AccountController {
     }
 
     @PostMapping("transfer")
-    public boolean transferMoney(@RequestBody TransferDTO transferDTO) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException {
+    public boolean transferMoney(@RequestBody TransferDTO transferDTO) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException {
         return accountServiceImp.transfer(transferDTO.getSender(), transferDTO.getReceiver(), transferDTO.getAmount());
     }
 

@@ -211,9 +211,10 @@ public class AccountServiceImp implements AccountService {
                 t.setDateTime(LocalDateTime.now());
                 t.setTransactionType(TransactionType.CREDIT);
                 t.setTransactionRemarks(remark);
+                t.setAccount(a);
                 t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
                 transactionService.createTransaction(t);
-                log.info("OPERATION SUCCESSFUL");
+                log.info("OPERATION OF CASH_IN SUCCESSFUL");
                 return t;
             }
         } else new BankAccountNotFoundException("Bank Acount not found");
@@ -221,58 +222,73 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Transaction withdraw(double amount, long accountId, String remark) throws BankAccountNotFoundException {
+    public Transaction withdraw(double amount, long accountId, String remark) throws BankAccountNotFoundException, BankAccountNotActivatedException, BankAccountSuspendedException {
         Account a = accountRepository.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("Bank Account not Found 404 !"));
         Transaction t = new Transaction();
         if (a != null){
             if(a instanceof  SavingAccount){
-                if ((a.getBalance() - ((SavingAccount) a).getMinBalance())>amount ){
-                    double balance = a.getBalance() - amount;
-                    a.setBalance(balance);
-                    accountRepository.save(a);
-                    t.setAmount(amount);
-                    t.setDateTime(LocalDateTime.now());
-                    t.setTransactionType(TransactionType.DEBIT);
-                    t.setTransactionRemarks(remark);
-                    t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
-                    transactionService.createTransaction(t);
-                    log.info("OPERATION SUCCESSFUL");
-                    return t;
-                }else{
-                    new BalanceNotSufficientException("BALANCE NOT SUFFICIENT");
-                    log.info("BALANCE NOT SUFFICIENT");
-                    t.setAmount(amount);
-                    t.setDateTime(LocalDateTime.now());
-                    t.setTransactionType(TransactionType.DEBIT);
-                    t.setTransactionRemarks(remark);
-                    t.setTransactionStatus(TransactionStatus.FAILED);
-                    transactionService.createTransaction(t);
-                    return t;
+                if(a.getAccountStatus().equals(AccountStatus.CRT)){
+                    throw new BankAccountNotActivatedException("PLEASE CONTACT THE ADMINISTRATION TO ACTIVE YOUR ACCOUNT");
+                 }else if (a.getAccountStatus().equals(AccountStatus.SUS)){throw new BankAccountSuspendedException("YOUR ACCOUNT IT'S BLOCKED CONTACT THE ADMINISTRATOR");
+                }else {
+                    if ((a.getBalance() - ((SavingAccount) a).getMinBalance())>amount ){
+                        double balance = a.getBalance() - amount;
+                        a.setBalance(balance);
+                        accountRepository.save(a);
+                        t.setAmount(amount);
+                        t.setDateTime(LocalDateTime.now());
+                        t.setTransactionType(TransactionType.DEBIT);
+                        t.setTransactionRemarks(remark);
+                        t.setAccount(a);
+                        t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
+                        transactionService.createTransaction(t);
+                        log.info("OPERATION OF CASH_OUT SUCCESSFUL");
+                        return t;
+                    }else{
+                        new BalanceNotSufficientException("BALANCE NOT SUFFICIENT");
+                        log.info("BALANCE NOT SUFFICIENT");
+                        t.setAmount(amount);
+                        t.setDateTime(LocalDateTime.now());
+                        t.setTransactionType(TransactionType.DEBIT);
+                        t.setTransactionRemarks(remark);
+                        t.setAccount(a);
+                        t.setTransactionStatus(TransactionStatus.FAILED);
+                        transactionService.createTransaction(t);
+                        return t;
+                    }
                 }
 
             }else {
-                if ((a.getBalance()- ((CurrentAccount) a).getOverDraft())>amount ){
-                    double balance = a.getBalance() - amount;
-                    a.setBalance(balance);
-                    accountRepository.save(a);
-                    t.setAmount(amount);
-                    t.setDateTime(LocalDateTime.now());
-                    t.setTransactionType(TransactionType.DEBIT);
-                    t.setTransactionRemarks("CASH_OUT OF "+amount);
-                    t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
-                    transactionService.createTransaction(t);
-                    log.info("OPERATION SUCCESSFUL");
-                    return t;
-                }else{
-                    new BalanceNotSufficientException("BALANCE NOT SUFFICIENT");
-                    t.setAmount(amount);
-                    t.setDateTime(LocalDateTime.now());
-                    t.setTransactionType(TransactionType.DEBIT);
-                    t.setTransactionRemarks(remark);
-                    t.setTransactionStatus(TransactionStatus.FAILED);
-                    transactionService.createTransaction(t);
-                    log.info("BALANCE NOT SUFFICIENT");
-                    return t;
+                if (a.getAccountStatus().equals(AccountStatus.CRT)) {
+                    throw new BankAccountNotActivatedException("PLEASE CONTACT THE ADMINISTRATION TO ACTIVE YOUR ACCOUNT");
+                } else if (a.getAccountStatus().equals(AccountStatus.SUS)) {
+                    throw new BankAccountSuspendedException("YOUR ACCOUNT IT'S BLOCKED CONTACT THE ADMINISTRATOR");
+                } else {
+                    if ((a.getBalance() - ((CurrentAccount) a).getOverDraft()) > amount) {
+                        double balance = a.getBalance() - amount;
+                        a.setBalance(balance);
+                        accountRepository.save(a);
+                        t.setAmount(amount);
+                        t.setDateTime(LocalDateTime.now());
+                        t.setTransactionType(TransactionType.DEBIT);
+                        t.setTransactionRemarks("CASH_OUT OF " + amount);
+                        t.setTransactionStatus(TransactionStatus.SUCCESSFUL);
+                        t.setAccount(a);
+                        transactionService.createTransaction(t);
+                        log.info("OPERATION OF CASH_OUT SUCCESSFUL");
+                        return t;
+                    } else {
+                        new BalanceNotSufficientException("BALANCE NOT SUFFICIENT");
+                        t.setAmount(amount);
+                        t.setDateTime(LocalDateTime.now());
+                        t.setTransactionType(TransactionType.DEBIT);
+                        t.setTransactionRemarks(remark);
+                        t.setTransactionStatus(TransactionStatus.FAILED);
+                        t.setAccount(a);
+                        transactionService.createTransaction(t);
+                        log.info("BALANCE NOT SUFFICIENT");
+                        return t;
+                    }
                 }
             }
 
@@ -281,7 +297,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException {
+    public boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException {
         withdraw(amount,senderAccountId,"transfer to "+reciverAccountId);
         deposit(reciverAccountId ,amount,"transfer from "+senderAccountId);
        return true;

@@ -33,12 +33,12 @@ public interface AccountService {
 
     Transaction deposit(long accountId, double amount, String remark) throws BankAccountNotFoundException;
 
-    Transaction withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException;
+    Transaction withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
 
     List<Account> viewAccounts(long accountId);
     Account viewSavingAcc(long customerId);
 
     Account viewCurrentAcc(long customerId);
 
-    boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException;
+    boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
 }
