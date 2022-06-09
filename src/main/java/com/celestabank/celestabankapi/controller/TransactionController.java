@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 public class TransactionController {
-    TransactionServiceImpl transactionService;
+    private final TransactionServiceImpl transactionService;
 
     @PostMapping("/create")
     public Transaction createTransaction(@RequestBody Transaction transaction) {

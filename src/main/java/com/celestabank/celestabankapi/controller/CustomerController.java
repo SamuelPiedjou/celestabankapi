@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 public class CustomerController {
-    CustomerServiceImpl customerService;
+    private final CustomerServiceImpl customerService;
     @PostMapping("/add")
     public Customer addCustomer(@RequestBody Customer customer){
         Customer n = null;

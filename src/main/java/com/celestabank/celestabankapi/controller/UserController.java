@@ -14,7 +14,7 @@ import java.util.Optional;
 @RequestMapping("/user")
 @AllArgsConstructor
 public class UserController {
-    UserServiceImpl userService;
+    private final UserServiceImpl userService;
 
 
     @PostMapping("/add")
