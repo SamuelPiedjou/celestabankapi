@@ -20,16 +20,11 @@ public class AccountController {
 
     private final AccountServiceImp   accountServiceImp;
 
-
-
     @PostMapping("/savings")
     public SavingAccount addSavingAcc(@RequestBody SavingAccountDTO savingAccount) {
         SavingAccount t = null;
-        try{
+
             t = accountServiceImp.saveSavingBankAccount(savingAccount.getInitialBalance(), savingAccount.getCustomerId());
-        }catch (RuntimeException e){
-           e.printStackTrace();
-        }
         return  t;
 
     }
