@@ -22,6 +22,7 @@ public class Customer extends  User {
     private String emailId;
     private int age;
     private Gender gender;
+    private String passwordCust;
     @OneToMany(mappedBy = "customer")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Account> account;

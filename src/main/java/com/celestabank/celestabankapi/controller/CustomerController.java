@@ -66,10 +66,11 @@ public class CustomerController {
         try {
             n = customerService.getAll();
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
         return n;
 
     }
+
 
 }
