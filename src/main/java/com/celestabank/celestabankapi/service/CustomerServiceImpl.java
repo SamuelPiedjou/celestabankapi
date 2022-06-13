@@ -6,6 +6,8 @@ import com.celestabank.celestabankapi.exeption.NoSuchCustomerExistsException;
 import com.celestabank.celestabankapi.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,12 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository db;
+    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    public CustomerServiceImpl(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
     public Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException {
         Customer existingCustomer

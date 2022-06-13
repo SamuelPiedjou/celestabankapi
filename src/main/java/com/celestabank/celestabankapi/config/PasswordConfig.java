@@ -1,4 +1,4 @@
-package com.celestabank.celestabankapi.config.Security.config;
+package com.celestabank.celestabankapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
