@@ -8,6 +8,7 @@ import com.celestabank.celestabankapi.entity.Transaction;
 import com.celestabank.celestabankapi.enums.AccountStatus;
 import com.celestabank.celestabankapi.exeption.*;
 import com.celestabank.celestabankapi.service.AccountServiceImp;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class AccountController {
 
 
     @PostMapping("/savings")
+    @ApiOperation(value = "CREER UN COMPTE EPARGNE")
     public SavingAccount addSavingAcc(@RequestBody SavingAccountDTO savingAccount) {
         SavingAccount t = null;
         try{
@@ -35,6 +37,7 @@ public class AccountController {
     }
 
     @PostMapping("/current")
+    @ApiOperation(value = "CREER COMPTE COURANT")
     public CurrentAccount addCurrentAcc(@RequestBody CurrentAccountDTO currentAccountDTO) throws CustomerNotFoundException, CustomerAlreadyHaveAnAccountException  {
          CurrentAccount t = null;
         try{
@@ -46,6 +49,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/closeSavingAcc/{accountId}")
+    @ApiOperation(value = "FERMER UN COMPTE EPARGNE SOUS LA BASE DE SON ID")
     public boolean closeSavingAcc(@PathVariable long accountId)   {
         if (accountId !=0){
             try{
@@ -59,6 +63,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/closeCurrentAcc/{accountId}")
+    @ApiOperation(value = "FERMER UN COMPTE COURANT SOUS LA BASE DE SON ID")
     public boolean closeCurrentAcc(@PathVariable long accountId)   {
         if (accountId !=0){
             try{
@@ -72,11 +77,13 @@ public class AccountController {
     }
 
     @GetMapping("/findAcc/{accountId}")
+    @ApiOperation(value = "CHERCHER UN COMPTE SOUS LA BASE DE SON NUMERO ")
     public Account findAccount(@PathVariable long accountId) throws BankAccountNotFoundException {
         return  accountServiceImp.getBankAccount(accountId);
     }
 
     @PutMapping("/update/saving")
+    @ApiOperation(value = "MAJ UN COMPTE EPARGNE")
     public SavingAccount updateSavingsAccount(@RequestBody SavingAccount updS) throws InvalidDetailsException {
         SavingAccount t = null;
         try {
@@ -88,6 +95,7 @@ public class AccountController {
     }
 
     @PutMapping("/update/current")
+    @ApiOperation(value = "MAJ COMPTE COURANT")
     public CurrentAccount updateCurrentAccount(@RequestBody CurrentAccount updT) throws InvalidDetailsException {
         CurrentAccount t = null;
         try {
@@ -100,6 +108,7 @@ public class AccountController {
 
 
     @PostMapping("/accounts/deposit")
+    @ApiOperation(value = "EFFECTUER DUN DEPOT DANS UN COMPTE")
     public Transaction deposit(@RequestBody DepositDTO depositDTO )   {
         Transaction t = null;
         try{
@@ -112,6 +121,7 @@ public class AccountController {
     }
 
     @PostMapping("/withdraw/")
+    @ApiOperation(value = "OPERATION DE RETRAIT DANS UN COMPTE")
     public Transaction withdraw(@RequestBody WithdrawlDTO withdrawlDTO )   {
         Transaction t = null;
         try{
@@ -124,6 +134,7 @@ public class AccountController {
     }
     
     @PutMapping("/suspend/{accoountId}")
+    @ApiOperation(value = "DESACTIVER UN COMPTE ")
     public AccountStatus suspendAcc(@PathVariable long accoountId)   {
         AccountStatus status= AccountStatus.CRT;
         try{
@@ -135,6 +146,7 @@ public class AccountController {
         return  status;
     }
     @PutMapping("/activeAcc/{accoountId}")
+    @ApiOperation(value = "ACTIVER UN COMPTE")
     public AccountStatus activate(@PathVariable long accoountId)   {
         AccountStatus status= AccountStatus.CRT;
         try{
@@ -148,6 +160,7 @@ public class AccountController {
 
 
     @GetMapping("find/{customerId}")
+    @ApiOperation(value = "CONSULTER UN COMPTE")
     public List<Account> viewAccount(@PathVariable long customerId) throws InvalidDetailsException {
         List<Account> a = null;
         try {
@@ -161,6 +174,7 @@ public class AccountController {
     }
 
     @GetMapping("findSaving/{customerId}")
+    @ApiOperation(value = "CONSULTER UN COMPTE EPARGNE")
     public Account viewSavingAccount(@PathVariable long customerId) {
 
         try{
@@ -172,6 +186,7 @@ public class AccountController {
     }
 
     @GetMapping("findCurrent/{customerId}")
+    @ApiOperation(value = "CONSULTER UN COMPTE COURANT")
     public Account viewCurrentAccount(@PathVariable long customerId) {
 
         try{
@@ -183,6 +198,7 @@ public class AccountController {
     }
 
     @PostMapping("transfer")
+    @ApiOperation(value = "OPERATION DE TRANSFERT D'UN COMPTE A COMPTE")
     public boolean transferMoney(@RequestBody TransferDTO transferDTO) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException {
         return accountServiceImp.transfer(transferDTO.getSender(), transferDTO.getReceiver(), transferDTO.getAmount());
     }

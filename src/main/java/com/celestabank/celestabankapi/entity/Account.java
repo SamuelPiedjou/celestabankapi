@@ -29,4 +29,8 @@ public class Account {
     @OneToMany(mappedBy = "account",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Transaction> accountOperations;
+    @OneToOne
+    private ATM atm;
+    @OneToOne
+    private Partner partner;
 }

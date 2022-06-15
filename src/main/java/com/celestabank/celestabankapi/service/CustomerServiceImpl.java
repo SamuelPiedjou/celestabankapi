@@ -24,15 +24,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException {
+    public Customer addCustomer(Customer customer)  {
+        log.info("Suppression du client  : "+customer + "  effectué avec succès");
         Customer existingCustomer
                 = db.findById(customer.getUserId())
                 .orElse(null);
         if (existingCustomer == null) {
-            db.save(customer);
+            existingCustomer = customer;
+            existingCustomer.setPassword(passwordEncoder.encode(customer.getPassword()));
+//            existingCustomer.setBirthday(customer.getBirthday());
+//            existingCustomer.setEmailId(customer.getEmailId());
+//            existingCustomer.setCustomerName(customer.getCustomerName());
+//            existingCustomer.setGender(customer.getGender());
+//            existingCustomer.setPhoneNo(customer.getPhoneNo());
+//            existingCustomer.setRole(customer.getRole());
+            db.save(existingCustomer);
+            log.info("Suppression du client  : "+customer + "  effectué avec succès");
             return  customer;
+
         }else if( existingCustomer.getEmailId().equals(customer.getEmailId())) throw new CustomerAlreadyExistsException("Customer already exixts!!");
         else throw new CustomerAlreadyExistsException("Customer already exixts!!");
+
 
     }
 

@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Data
 @AllArgsConstructor
@@ -17,16 +14,11 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Beneficiary {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long beneficiaryId;
     private String beneficiaryName;
-    private int beneficiaryAccNo;
-    private String IFSC;
-    private AccountType accountType;
-    @ManyToOne
-    private Customer customer;
+    private long beneficiaryAccNo;
     @ManyToOne
     @JsonIgnore
-    @JoinColumn
-    private Account account;
-
+    private Customer customer;
 }

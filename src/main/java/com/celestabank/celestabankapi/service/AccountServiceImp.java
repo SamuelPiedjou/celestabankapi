@@ -297,6 +297,11 @@ public class AccountServiceImp implements AccountService {
         return t;
     }
 
+//    public  Transaction doCardlessWithDrawall(String number, double amount){}
+//    public  Transaction doDepositToNonCustomer(long senderId, long dapId, double amount){}
+
+//    public Transaction doNoCustomerBankTransfer(){return null}
+
     @Override
     public boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException {
         withdraw(amount,senderAccountId,"transfer to "+reciverAccountId);

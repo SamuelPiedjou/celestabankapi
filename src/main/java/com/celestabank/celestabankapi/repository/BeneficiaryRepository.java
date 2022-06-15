@@ -10,7 +10,4 @@ import java.util.Set;
 
 @Repository
 public interface BeneficiaryRepository extends JpaRepository<Beneficiary,Long> {
-
-    @Query("select n from Beneficiary n where n.account.accountId=:id")
-    public Set<Beneficiary> listAllBeneficiaries(@Param("id") long id);
 }

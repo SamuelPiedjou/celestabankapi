@@ -1,13 +1,16 @@
 package com.celestabank.celestabankapi.controller;
 
 import com.celestabank.celestabankapi.entity.Beneficiary;
+import com.celestabank.celestabankapi.entity.Customer;
 import com.celestabank.celestabankapi.exeption.DetailsNotFoundException;
 import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
 import com.celestabank.celestabankapi.service.BeneficiaryServiceImpl;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
 import java.util.Set;
 
 @RequestMapping("/beneficiary")
@@ -16,17 +19,12 @@ import java.util.Set;
 public class BeneficiaryController {
     private final BeneficiaryServiceImpl beneficiaryService;
     @PostMapping("/add")
-    public Beneficiary addBeneficiary(@RequestBody Beneficiary beneficiary) throws InvalidDetailsException {
-        Beneficiary n = null;
-        try {
-            n = beneficiaryService.addBeneficiary(beneficiary);
-        } catch (Exception e) {
-            throw new InvalidDetailsException("The details given are not valid!");
-        }
-        return n;
+    @ApiOperation(value = "AJOUT D'UN BENEFICIAIRE")
+    public Beneficiary addBeneficiary(@RequestBody Beneficiary beneficiary)   {
+            return  beneficiaryService.addBeneficiary(beneficiary);
     }
 
-    @PutMapping("update")
+    @PutMapping("update")@ApiOperation(value = "MAJ BENEFICIARE")
     public Beneficiary updateBenficiary(@RequestBody Beneficiary beneficiary) throws InvalidDetailsException {
         Beneficiary n = null;
         try {
@@ -38,6 +36,7 @@ public class BeneficiaryController {
     }
 
     @DeleteMapping("delete/{beneficiaryId}")
+    @ApiOperation(value = "SUPPRIMER BENEFICIAIRE")
     public Beneficiary deleteBeneficiary(@PathVariable long beneficiaryId) throws DetailsNotFoundException {
         Beneficiary n = null;
         try {
@@ -49,28 +48,15 @@ public class BeneficiaryController {
     }
 
     @GetMapping("find/{beneficiaryId}")
-    public Beneficiary findBeneficiaryById(@PathVariable long beneficiaryId) throws DetailsNotFoundException {
-        Beneficiary n = null;
-        try {
-            n = beneficiaryService.findBeneficiaryById(beneficiaryId);
-        } catch (Exception e) {
-            throw new DetailsNotFoundException("The given ID is not found!");
-        }
-        return n;
+    @ApiOperation(value = "CHERCHER UN BENEFICIAIRE")
+    public Beneficiary findBeneficiaryById(@PathVariable long beneficiaryId)   {
+           return beneficiaryService.findBeneficiaryById(beneficiaryId);
     }
 
     @GetMapping("all/{accountId}")
-    public Set<Beneficiary> listAllBeneficiaries(@PathVariable long accountId)  {
-        Set<Beneficiary> n = null;
-        try {
-            n = beneficiaryService.listAllBeneficiaries(accountId);
-            if(n.isEmpty()) {
+    @ApiOperation(value = "LISTER TOUS LES BENEFICIAIRES D'UN CLIENT")
+    public List<Beneficiary> listAllBeneficiaries(@PathVariable long accountId)  {
+            return  beneficiaryService.getAllBenef(accountId);
 
-            }
-
-        }  catch(Exception e) {
-
-        }
-        return n;
     }
 }

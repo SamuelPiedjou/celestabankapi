@@ -23,10 +23,9 @@ public class Customer extends  User {
     private String emailId;
     private Date birthday;
     private Gender gender;
-    private String passwordCust;
     @OneToMany(mappedBy = "customer")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Account> account;
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private List<Beneficiary> beneficiaries;
 }
