@@ -1,20 +1,24 @@
 package com.celestabank.celestabankapi.controller;
 
 import com.celestabank.celestabankapi.entity.Transaction;
-import com.celestabank.celestabankapi.service.TransactionServiceImpl;
-import lombok.AllArgsConstructor;
+import com.celestabank.celestabankapi.service.TransactionService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequestMapping("/transaction")
 @RestController
-@AllArgsConstructor
 public class TransactionController {
-    private final TransactionServiceImpl transactionService;
+    private final TransactionService transactionService;
 
-    @PostMapping("/create")
-    public Transaction createTransaction(@RequestBody Transaction transaction) {
+    
+    public TransactionController(TransactionService transactionService) {
+		super();
+		this.transactionService = transactionService;
+	}
+
+	@PostMapping("/create")
+    public Transaction createTransaction(@RequestBody Transaction transaction) throws Exception {
         return transactionService.createTransaction(transaction);
     }
 
@@ -24,12 +28,12 @@ public class TransactionController {
     }
 
     @GetMapping("/view/{transactionId}")
-    public Transaction viewTransactionByid(@PathVariable long transactionId) {
+    public Transaction viewTransactionByid(@PathVariable long transactionId) throws Exception {
         return transactionService.viewTransaction(transactionId);
     }
 
     @GetMapping("/all/{accountId}")
-    public List<Transaction> getAllMyAccTransactions(@PathVariable int accountId) {
+    public List<Transaction> getAllMyAccTransactions(@PathVariable int accountId) throws Exception {
         return transactionService.getAllMyAccTransactions(accountId);
     }
 }

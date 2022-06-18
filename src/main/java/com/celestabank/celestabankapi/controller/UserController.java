@@ -1,10 +1,7 @@
 package com.celestabank.celestabankapi.controller;
 
 import com.celestabank.celestabankapi.entity.User;
-import com.celestabank.celestabankapi.exeption.DetailsNotFoundException;
-import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
-import com.celestabank.celestabankapi.service.UserServiceImpl;
-import lombok.AllArgsConstructor;
+import com.celestabank.celestabankapi.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,43 +9,26 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
-@AllArgsConstructor
 public class UserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
+    
+    public UserController(UserService userService) {
+		super();
+		this.userService = userService;
+	}
 
-
-    @PostMapping("/add")
-    public List<User> addNewUser(@RequestBody User user) throws InvalidDetailsException {
-        List<User> n = null;
-        try {
-            n = userService.addNewUser(user);
-        } catch (Exception e) {
-            throw new InvalidDetailsException("Invalid Details!!!");
-
-        }
-        return n;
+	@PostMapping("/add")
+    public List<User> addNewUser(@RequestBody User user) throws Exception {
+        return userService.addNewUser(user);
     }
 
     @PutMapping("/update")
-    public List<User> updateUserInfo(@RequestBody User user) throws InvalidDetailsException {
-        List<User> n = null;
-        try {
-            n = userService.updateUserInfo(user);
-        } catch (Exception e) {
-            throw new InvalidDetailsException("Invalid Details!!!");
-
-        }
-        return n;
+    public List<User> updateUserInfo(@RequestBody User user) throws Exception {
+        return userService.updateUserInfo(user);
     }
 
     @DeleteMapping("/delete/{userId}")
-    public Optional<User> deleteUserInfo(long userId) throws DetailsNotFoundException {
-        Optional<User> n = null;
-        try {
-            n = userService.deleteUserInfo(userId);
-        } catch (Exception e) {
-            throw new DetailsNotFoundException("The given ID could not be deleted!");
-        }
-        return n;
+    public Optional<User> deleteUserInfo(long userId) throws Exception {
+        return userService.deleteUserInfo(userId);
     }
 }

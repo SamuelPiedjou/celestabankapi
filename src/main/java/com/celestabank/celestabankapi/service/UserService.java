@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    public List<User> addNewUser(User user);
+    List<User> addNewUser(User user)  throws Exception;;
 
-    public List<User> updateUserInfo(User user);
+    List<User> updateUserInfo(User user)  throws Exception;
 
-    public Optional<User> deleteUserInfo(long customerId);
+    Optional<User> deleteUserInfo(long customerId)  throws Exception;
 }

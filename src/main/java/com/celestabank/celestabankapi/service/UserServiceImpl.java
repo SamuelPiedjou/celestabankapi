@@ -10,29 +10,32 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
-@Slf4j
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+	private UserRepository userRepository;
 
-    @Override
-    public List<User> addNewUser(User user) {
-        userRepository.saveAndFlush(user);
-        return userRepository.findAll();
-    }
+	public UserServiceImpl(UserRepository userRepository) {
+		super();
+		this.userRepository = userRepository;
+	}
 
-    @Override
-    public List<User> updateUserInfo(User user) {
-        userRepository.saveAndFlush(user);
-        return userRepository.findAll();
-    }
+	@Override
+	public List<User> addNewUser(User user) {
+		userRepository.saveAndFlush(user);
+		return userRepository.findAll();
+	}
 
-    @Override
-    public Optional<User> deleteUserInfo(long customerId) {
-        Optional<User> user = userRepository.findById((int) customerId);
-        if(user!= null)
-            userRepository.deleteById((int) customerId);
-        return user;
-    }
+	@Override
+	public List<User> updateUserInfo(User user) {
+		userRepository.saveAndFlush(user);
+		return userRepository.findAll();
+	}
+
+	@Override
+	public Optional<User> deleteUserInfo(long customerId) {
+		Optional<User> user = userRepository.findById(customerId);
+		if (user != null)
+			userRepository.deleteById(customerId);
+		return user;
+	}
 }

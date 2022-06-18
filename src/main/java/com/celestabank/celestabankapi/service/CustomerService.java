@@ -7,13 +7,13 @@ import com.celestabank.celestabankapi.exeption.NoSuchCustomerExistsException;
 import java.util.List;
 
 public interface CustomerService {
-      Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException;
+	Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException;
 
-    Customer updateCustomer(Customer customer) throws NoSuchCustomerExistsException;
+	Customer updateCustomer(Customer customer) throws NoSuchCustomerExistsException;
 
-    boolean deleteCustomer(long customerId) throws NoSuchCustomerExistsException;
+	boolean deleteCustomer(long customerId) throws NoSuchCustomerExistsException;
 
-      Customer findCustomerById(long customerId) throws NoSuchCustomerExistsException;
+	Customer findCustomerById(long customerId) throws NoSuchCustomerExistsException;
 
-      List<Customer> getAll();
+	List<Customer> getAll()  throws Exception;
 }

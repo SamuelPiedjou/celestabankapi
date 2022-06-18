@@ -6,13 +6,13 @@ import com.celestabank.celestabankapi.exeption.BeneficiaryNotFoundException;
 import java.util.Set;
 
 public interface BeneficiaryService {
-    public Beneficiary addBeneficiary(Beneficiary beneficiary);
+    Beneficiary addBeneficiary(Beneficiary beneficiary) throws Exception;
 
-    public Beneficiary updateBeneficiary(Beneficiary beneficiary);
+    Beneficiary updateBeneficiary(Beneficiary beneficiary) throws Exception;
 
-    public Beneficiary deleteBeneficiary(long beneficiaryId) throws BeneficiaryNotFoundException;
+    Beneficiary deleteBeneficiary(long beneficiaryId) throws BeneficiaryNotFoundException;
 
-    public Beneficiary findBeneficiaryById(long beneficiaryId);
+    Beneficiary findBeneficiaryById(long beneficiaryId) throws Exception;
 
-    public Set<Beneficiary> listAllBeneficiaries(long accountid);
+    Set<Beneficiary> listAllBeneficiaries(long accountid) throws Exception;
 }

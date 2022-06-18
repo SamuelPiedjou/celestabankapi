@@ -1,17 +1,30 @@
 package com.celestabank.celestabankapi.entity;
 
-import com.celestabank.celestabankapi.enums.AccountStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Entity
+@Table(name = "FT_SAVING_ACC")
 public class SavingAccount extends  Account {
-    private double minBalance= 2000;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private double minBalance= 2000;
     private double interestRate =5.5;
+	public double getMinBalance() {
+		return minBalance;
+	}
+	public void setMinBalance(double minBalance) {
+		this.minBalance = minBalance;
+	}
+	public double getInterestRate() {
+		return interestRate;
+	}
+	public void setInterestRate(double interestRate) {
+		this.interestRate = interestRate;
+	}
+    
+    
 }

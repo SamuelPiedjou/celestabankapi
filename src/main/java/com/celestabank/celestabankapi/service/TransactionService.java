@@ -6,11 +6,11 @@ import com.celestabank.celestabankapi.exeption.TransactionNotFoundException;
 import java.util.List;
 
 public interface TransactionService {
-    public Transaction createTransaction( Transaction transaction);
+    Transaction createTransaction( Transaction transaction)  throws Exception;
 
-    public Transaction viewTransaction(long transactionId);
+    Transaction viewTransaction(long transactionId) throws Exception;
 
-    public Transaction findTransactionById(long transactionId) throws TransactionNotFoundException, TransactionNotFoundException;
+    Transaction findTransactionById(long transactionId) throws TransactionNotFoundException, TransactionNotFoundException;
 
-    public List<Transaction> getAllMyAccTransactions(long accountId);
+    List<Transaction> getAllMyAccTransactions(long accountId) throws Exception;
 }

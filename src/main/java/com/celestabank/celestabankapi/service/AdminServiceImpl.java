@@ -3,20 +3,52 @@ package com.celestabank.celestabankapi.service;
 import com.celestabank.celestabankapi.entity.Admin;
 import com.celestabank.celestabankapi.exeption.AdminNotFoundException;
 import com.celestabank.celestabankapi.repository.AdminRepository;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
-@Slf4j
 public class AdminServiceImpl implements AdminService {
+	
     private AdminRepository adminRepository;
 
-    @Override
+	public AdminServiceImpl(AdminRepository adminRepository) {
+		super();
+		this.adminRepository = adminRepository;
+	}
+
+	@Override
+	public Admin addAdmin(Admin admin) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Admin updateAdmin(Admin admin) throws AdminNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean deleteAdmin(long adminId) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Admin findAdminById(long adminId) throws AccountNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Admin> listAllAdmin() throws Exception {
+		return adminRepository.findAll();
+	}
+
+    
+  /*  @Override
     public Admin addAdmin(Admin admin) {
         log.info("AJout de : "+admin + "comme administrateur effectué avec succès");
          adminRepository.saveAndFlush(admin);
@@ -49,5 +81,5 @@ public class AdminServiceImpl implements AdminService {
     public List<Admin> listAllAdmin() {
 
         return adminRepository.findAll();
-    }
+    }*/
 }

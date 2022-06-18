@@ -1,17 +1,24 @@
 package com.celestabank.celestabankapi.entity;
 
-import com.celestabank.celestabankapi.enums.AccountStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class CurrentAccount extends  Account {
+@Table(name = "FT_CURRENT_ACC")
+public class CurrentAccount extends Account {
 
-    private double overDraft =2000;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private double overDraft = 2000;
+
+	public double getOverDraft() {
+		return overDraft;
+	}
+
+	public void setOverDraft(double overDraft) {
+		this.overDraft = overDraft;
+	}
+
 }

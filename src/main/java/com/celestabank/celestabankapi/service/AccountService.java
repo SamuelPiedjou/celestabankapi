@@ -5,40 +5,39 @@ import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
 import com.celestabank.celestabankapi.entity.Transaction;
 import com.celestabank.celestabankapi.enums.AccountStatus;
-import com.celestabank.celestabankapi.exeption.*;
-
 import java.util.List;
 
 public interface AccountService {
 
-    CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
+	CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) throws Exception;
 
-    SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
+	SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws Exception;
 
-    boolean deleteSavingId(long accountId) throws  InvalidDetailsException;
+	boolean deleteSavingId(long accountId) throws Exception;
 
-    boolean deleteCurrentId(long accountId) throws InvalidDetailsException;
+	boolean deleteCurrentId(long accountId) throws Exception;
 
-    Account getBankAccount(long accountId) throws BankAccountNotFoundException;
+	Account getBankAccount(long accountId) throws Exception;
 
-    SavingAccount updateSavingAccount(SavingAccount savingAccount);
+	SavingAccount updateSavingAccount(SavingAccount savingAccount);
 
-    CurrentAccount  updateCurrentAccount(CurrentAccount currentAccount);
+	CurrentAccount updateCurrentAccount(CurrentAccount currentAccount);
 
-    double SoldeCompte(long accountId) throws BankAccountNotFoundException;
+	double SoldeCompte(long accountId) throws Exception;
 
-    AccountStatus activateAccount(long accountId) throws BankAccountNotFoundException;
+	AccountStatus activateAccount(long accountId) throws Exception;
 
-    AccountStatus suspendAccount(long accountId) throws BankAccountNotFoundException;
+	AccountStatus suspendAccount(long accountId) throws Exception;
 
-    Transaction deposit(long accountId, double amount, String remark) throws BankAccountNotFoundException;
+	Transaction deposit(long accountId, double amount, String remark) throws Exception;
 
-    Transaction withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
+	Transaction withdraw(double amount, long accountId, String remark) throws Exception;
 
-    List<Account> viewAccounts(long accountId);
-    Account viewSavingAcc(long customerId);
+	List<Account> viewAccounts(long accountId) throws Exception;
 
-    Account viewCurrentAcc(long customerId);
+	Account viewSavingAcc(long customerId) throws Exception;
 
-    boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
+	Account viewCurrentAcc(long customerId) throws Exception;
+
+	boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws Exception;
 }
