@@ -1,9 +1,10 @@
 package com.celestabank.celestabankapi.service;
 
+import com.celestabank.celestabankapi.dto.AtmDTO;
 import com.celestabank.celestabankapi.entity.ATM;
 import com.celestabank.celestabankapi.exeption.ATMAlreadyExistsException;
-import com.celestabank.celestabankapi.exeption.NoSuchATMExistsException;
-import com.celestabank.celestabankapi.exeption.NoSuchCustomerExistsException;
+import com.celestabank.celestabankapi.exeption.ATMNotExistException;
+import com.celestabank.celestabankapi.mappers.BankServiceMapper;
 import com.celestabank.celestabankapi.repository.ATMrepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,40 +17,42 @@ import java.util.List;
 @AllArgsConstructor
 public class ATMServiceImp implements ATMservice {
 
-    private ATMrepository db;
+    private  final ATMrepository db;
+    private final BankServiceMapper dtoMappers;
+    private final AccountServiceImp accountServiceImp;
+
+
 
     @Override
-    public ATM addAtm(ATM atm) throws ATMAlreadyExistsException {
-        ATM existingAtm  = db.findById(atm.getId()).orElse(null);
-        if (existingAtm == null) {
-            db.save(atm);
-            return  atm;
-        }else throw new ATMAlreadyExistsException("ATM already exists!!");
+    public AtmDTO addAtm(AtmDTO atmDTO){
+        ATM existingAtm  = dtoMappers.fromAtmDTO(atmDTO);
+            existingAtm.setAccount(accountServiceImp.savingAccount(200000000,existingAtm.getId()));
+            db.save(existingAtm);
+            return  dtoMappers.fromATM(existingAtm);
     }
 
     @Override
-    public ATM updateAtm(ATM atm) {
-        ATM existingAtm  = db.findById(atm.getId()).orElse(null);
-        if (existingAtm == null) {
+    public AtmDTO updateAtm(long atmId, AtmDTO atmDTO) {
+        ATM atm = getAtmById(atmId);
+
+        if (atm!=null){
+            AtmDTO atmDTO1= dtoMappers.fromATM(atm);
+            atmDTO1.setAdresse(atmDTO.getAdresse());
+            atm= dtoMappers.fromAtmDTO(atmDTO1);
             db.save(atm);
-            return  atm;
-        }else throw new ATMAlreadyExistsException("ATM already exists!!");
+            return atmDTO1;
+        }
+        return  null;
     }
 
     @Override
     public boolean deleteAtm(long atmId) {
         log.info("Suppression de l'ATM  : "+atmId + "  effectué avec succès");
-        ATM existingPartner
-                = db.findById(atmId)
-                .orElse(null);
-        if (existingPartner == null)
-            throw new NoSuchCustomerExistsException(
-                    "No Such partner Exists!!");
-        else {
-
+        if (getAtmById(atmId)!=null){
             db.deleteById(atmId);
-            return true;
+            return  true;
         }
+        return  false;
     }
 
     @Override
@@ -59,15 +62,14 @@ public class ATMServiceImp implements ATMservice {
 
     @Override
     public ATM getAtmById(long atmId) {
+        ATM atm = db.findById(atmId).orElseThrow(()-> new ATMNotExistException("ATM NOT FOUND"));
         log.info("Recherche de l'ATM  : "+atmId + "  effectué avec succès");
-        ATM existingPartner = db.findById(atmId).orElse(null);
-        if (existingPartner == null)
-            throw new NoSuchATMExistsException(
-                    "No Such ATM Exists!!");
-        else {
-
-            db.findById(atmId);
-            return existingPartner;
-        }
+        return atm;
+    }
+    @Override
+    public AtmDTO viewAtmDTO(long atmId){
+        ATM atm = db.findById(atmId).orElseThrow(()-> new ATMNotExistException("ATM NOT FOUND"));
+        log.info("Recherche de l'ATM  : "+atmId + "  effectué avec succès");
+        return dtoMappers.fromATM(atm);
     }
 }

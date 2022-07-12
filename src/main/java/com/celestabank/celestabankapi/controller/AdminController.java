@@ -6,6 +6,7 @@ import com.celestabank.celestabankapi.exeption.DetailsNotFoundException;
 import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
 import com.celestabank.celestabankapi.service.AdminServiceImpl;
 import lombok.AllArgsConstructor;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,59 +20,23 @@ public class AdminController {
 
     @PostMapping("/add")
     public Admin addAdmin(@RequestBody Admin admin) throws InvalidDetailsException {
-        Admin n=null;
-        try {
-            n=adminService.addAdmin(admin);
-        }
-        catch(Exception e) {
-            throw new InvalidDetailsException("The details given are not valid!");
-        }
-        return n;
+       return  adminService.addAdmin(admin);
     }
-    @PutMapping("/update")
-    public Admin updateAdmin(@RequestBody Admin admin, long id) throws InvalidDetailsException, AdminNotFoundException
-    {
-        Admin n=null;
-        try {
-            n= adminService.updateAdmin(admin); }
-        catch(Exception e) {
-           e.getMessage();
-        }
-        return n;
+    @PutMapping("/update/{id}")
+    public Admin updateAdmin(@RequestBody Admin admin,@PathVariable long id) throws InvalidDetailsException, AdminNotFoundException{
+        return adminService.updateAdmin(id, admin);
     }
     @DeleteMapping("/delete/{adminId}")
     public boolean deleteAdmin(@PathVariable long adminId)throws DetailsNotFoundException {
-        boolean n= Boolean.parseBoolean(null);
-        try {
-            n= adminService.deleteAdmin(adminId);
-        }
-        catch(Exception e) {
-            throw new DetailsNotFoundException("The given ID is deleted");
-        }
+        adminService.deleteAdmin(adminId);
         return true;
     }
     @GetMapping("/find/{adminId}")
-    public Admin findAdminById(@PathVariable long adminId)throws DetailsNotFoundException{
-        Admin n=null;
-        try {
-            n=adminService.findAdminById(adminId);
-        }
-        catch(Exception e) {
-            throw new DetailsNotFoundException("The given ID is not found");
-        }
-        return n;
+    public Admin findAdminById(@PathVariable long adminId) {
+       return  adminService.findAdminById(adminId);
     }
-    @GetMapping("all/{admin}")
-    public List<Admin> listAllAdmin(){
-        List<Admin> n=null;
-        try {
-            n=adminService.listAllAdmin();
-
-        }
-        catch ( Exception e) {
-
-        }
-        return n;
+    @GetMapping("/all")
+    public List<Admin> listAllAdmin() {
+        return  adminService.listAllAdmin();
     }
-
 }

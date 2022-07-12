@@ -1,6 +1,6 @@
 package com.celestabank.celestabankapi.entity;
 
-import com.celestabank.celestabankapi.enums.AccountStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

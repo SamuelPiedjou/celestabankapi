@@ -11,6 +11,13 @@ import java.util.List;
 
 public interface AccountService {
 
+    //    public Account CheckTypeAccount(long customerId){
+    //        Customer customer = customerRepository.findById(customerId).orElse(null);
+    //        customer.getAccount();
+    //
+    //    }
+    SavingAccount savingAccount(double initialBaln, long idMachine);
+
     CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
 
     SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;

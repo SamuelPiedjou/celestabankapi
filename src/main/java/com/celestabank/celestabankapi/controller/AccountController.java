@@ -136,7 +136,7 @@ public class AccountController {
     @PutMapping("/suspend/{accoountId}")
     @ApiOperation(value = "DESACTIVER UN COMPTE ")
     public AccountStatus suspendAcc(@PathVariable long accoountId)   {
-        AccountStatus status= AccountStatus.CRT;
+        AccountStatus status= AccountStatus.CREATED;
         try{
             status= accountServiceImp.suspendAccount(accoountId);
         }catch (RuntimeException e){
@@ -148,7 +148,7 @@ public class AccountController {
     @PutMapping("/activeAcc/{accoountId}")
     @ApiOperation(value = "ACTIVER UN COMPTE")
     public AccountStatus activate(@PathVariable long accoountId)   {
-        AccountStatus status= AccountStatus.CRT;
+        AccountStatus status= AccountStatus.CREATED;
         try{
             status= accountServiceImp.activateAccount(accoountId);
         }catch (RuntimeException e){

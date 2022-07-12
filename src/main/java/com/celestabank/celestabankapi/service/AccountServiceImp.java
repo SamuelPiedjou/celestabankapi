@@ -33,8 +33,9 @@ public class AccountServiceImp implements AccountService {
         customerRepository.findById(customerId).orElseThrow(()-> new CustomerNotFoundException("CUSTOMER NOT FOUNDD"));
         return true;
     }
-    public boolean customerCheckAccountExist(long customerId){
+    public boolean customerCheckAccountExist(long accountId,long customerId){
         Customer customer = customerRepository.findById(customerId).orElse(null);
+        Account account  = accountRepository.findById(accountId).orElse(null);
         if(customer.getAccount().isEmpty())return  true ;
         else return false;
     }
@@ -44,21 +45,37 @@ public class AccountServiceImp implements AccountService {
 //        customer.getAccount();
 //
 //    }
+    @Override
+    public SavingAccount savingAccount(double initialBaln, long idMachine){
+        SavingAccount savingAccount=new SavingAccount();
+        savingAccount.setAccountId((long) (Math.random()*(9999999- 1)+0000001));
+        savingAccount.setCreatedAt(new Date());
+        savingAccount.setAccountStatus(AccountStatus.CREATED);
+        savingAccount.setBalance(initialBaln);
+        savingAccount.setMinBalance( savingAccount.getMinBalance());
+        savingAccount.setAccountType(AccountType.EPARGNE);
+        savingAccount.setAccountStatus(AccountStatus.CREATED);
+        savingAccount.setInterestRate(savingAccount.getInterestRate());
+        SavingAccount savedBankAccount = accountRepository.save(savingAccount);
+        log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ savedBankAccount.getAccountId() +" and your balance id "+savedBankAccount.getBalance());
+        return savedBankAccount;
+    }
 
     @Override
-    public CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException, CustomerAlreadyHaveAnAccountException {
+    public CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) {
         log.info("CREATING CURREENT ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
         Customer customer= customerRepository.findById(customerId).orElse(null);
         if(customerExist(customerId) ){
             if (customerCheckAccountExist(customerId)){
                 CurrentAccount currentAccount=new CurrentAccount();
-                currentAccount.setAccountId((long) (Math.random()*(9999999- 1)+0000001));
+                currentAccount.setAccountId((long) (Math.random()*(999999999- 1)+123456719));
                 currentAccount.setCreatedAt(new Date());
                 currentAccount.setBalance(initialBalance);
                 currentAccount.setOverDraft( currentAccount.getOverDraft());
                 currentAccount.setCustomer(customer);
-                currentAccount.setAccountType(AccountType.CUR);
-                currentAccount.setAccountStatus(AccountStatus.CRT);
+                currentAccount.setAccountType(AccountType.COURANT);
+                currentAccount.setAccountStatus(AccountStatus.CREATED);
+                currentAccount.setOverDraft(currentAccount.getOverDraft());
                 CurrentAccount savedBankAccount = accountRepository.save(currentAccount);
                 log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ currentAccount.getAccountId() +" and your balance id "+currentAccount.getBalance());
                 return savedBankAccount;
@@ -73,14 +90,14 @@ public class AccountServiceImp implements AccountService {
         if(customerExist(customerId) ){
             if (customerCheckAccountExist(customerId)){
                 SavingAccount savingAccount=new SavingAccount();
-                savingAccount.setAccountId((long) (Math.random()*(9999999- 1)+0000001));
+                savingAccount.setAccountId((long) (Math.random()*(99999999- 1)+00000001));
                 savingAccount.setCreatedAt(new Date());
-                savingAccount.setAccountStatus(AccountStatus.CRT);
+                savingAccount.setAccountStatus(AccountStatus.CREATED);
                 savingAccount.setBalance(initialBalance);
                 savingAccount.setMinBalance( savingAccount.getMinBalance());
                 savingAccount.setCustomer(customer);
-                savingAccount.setAccountType(AccountType.SAV);
-                savingAccount.setAccountStatus(AccountStatus.CRT);
+                savingAccount.setAccountType(AccountType.EPARGNE);
+                savingAccount.setAccountStatus(AccountStatus.CREATED);
                 SavingAccount savedBankAccount = accountRepository.save(savingAccount);
                 log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ savedBankAccount.getAccountId() +" and your balance id "+savedBankAccount.getBalance());
                 return savedBankAccount;
@@ -109,7 +126,7 @@ public class AccountServiceImp implements AccountService {
     public boolean deleteCurrentId(long accountId) throws InvalidDetailsException {
         if (accountId !=0){
             CurrentAccount currentAccount  = (CurrentAccount) accountRepository.findById(accountId).orElse(null);
-            if (currentAccount.getAccountStatus().equals(AccountStatus.ACT)){
+            if (currentAccount.getAccountStatus().equals(AccountStatus.ACTIVATED)){
                 throw new InvalidDetailsException("THIS ACCOUNT IT'S AN ACTIF ACCOUNT, PLEASE DISABLE FIRST AND RETRY !");
             }else{
                 accountRepository.deleteById(accountId);
@@ -157,7 +174,7 @@ public class AccountServiceImp implements AccountService {
     @Override
     public AccountStatus activateAccount(long accountId) throws BankAccountNotFoundException {
         Account account =getBankAccount(accountId);
-        account.setAccountStatus(AccountStatus.ACT);
+        account.setAccountStatus(AccountStatus.ACTIVATED);
         accountRepository.saveAndFlush(account);
         log.info("THIS ACCOUNT WAS ACTIVATED");
         return account.getAccountStatus();
@@ -165,7 +182,7 @@ public class AccountServiceImp implements AccountService {
     @Override
     public AccountStatus suspendAccount(long accountId) throws BankAccountNotFoundException {
         Account account =getBankAccount(accountId);
-        account.setAccountStatus(AccountStatus.SUS);
+        account.setAccountStatus(AccountStatus.SUSPENDED);
         accountRepository.saveAndFlush(account);
         log.info("THIS ACCOUNT WAS SUSPENDED");
         return account.getAccountStatus();
@@ -228,9 +245,9 @@ public class AccountServiceImp implements AccountService {
         Transaction t = new Transaction();
         if (a != null){
             if(a instanceof  SavingAccount){
-                if(a.getAccountStatus().equals(AccountStatus.CRT)){
+                if(a.getAccountStatus().equals(AccountStatus.CREATED)){
                     throw new BankAccountNotActivatedException("PLEASE CONTACT THE ADMINISTRATION TO ACTIVE YOUR ACCOUNT");
-                 }else if (a.getAccountStatus().equals(AccountStatus.SUS)){throw new BankAccountSuspendedException("YOUR ACCOUNT IT'S BLOCKED CONTACT THE ADMINISTRATOR");
+                 }else if (a.getAccountStatus().equals(AccountStatus.SUSPENDED)){throw new BankAccountSuspendedException("YOUR ACCOUNT IT'S BLOCKED CONTACT THE ADMINISTRATOR");
                 }else {
                     if ((a.getBalance() - ((SavingAccount) a).getMinBalance())>amount ){
                         double balance = a.getBalance() - amount;
@@ -260,9 +277,9 @@ public class AccountServiceImp implements AccountService {
                 }
 
             }else {
-                if (a.getAccountStatus().equals(AccountStatus.CRT)) {
+                if (a.getAccountStatus().equals(AccountStatus.CREATED)) {
                     throw new BankAccountNotActivatedException("PLEASE CONTACT THE ADMINISTRATION TO ACTIVE YOUR ACCOUNT");
-                } else if (a.getAccountStatus().equals(AccountStatus.SUS)) {
+                } else if (a.getAccountStatus().equals(AccountStatus.SUSPENDED)) {
                     throw new BankAccountSuspendedException("YOUR ACCOUNT IT'S BLOCKED CONTACT THE ADMINISTRATOR");
                 } else {
                     if ((a.getBalance() - ((CurrentAccount) a).getOverDraft()) > amount) {

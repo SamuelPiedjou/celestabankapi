@@ -1,102 +1,80 @@
 package com.celestabank.celestabankapi.service;
 
+import com.celestabank.celestabankapi.dto.CustomerDto;
 import com.celestabank.celestabankapi.entity.Customer;
-import com.celestabank.celestabankapi.exeption.CustomerAlreadyExistsException;
+import com.celestabank.celestabankapi.exeption.CustomerNotFoundException;
 import com.celestabank.celestabankapi.exeption.NoSuchCustomerExistsException;
+import com.celestabank.celestabankapi.mappers.BankServiceMapper;
 import com.celestabank.celestabankapi.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
-    private CustomerRepository db;
+    private final CustomerRepository db;
     private final PasswordEncoder passwordEncoder;
-    @Autowired
-    public CustomerServiceImpl(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final BankServiceMapper dtoMappers;
 
     @Override
-    public Customer addCustomer(Customer customer)  {
-        log.info("Suppression du client  : "+customer + "  effectué avec succès");
-        Customer existingCustomer
-                = db.findById(customer.getUserId())
-                .orElse(null);
-        if (existingCustomer == null) {
-            existingCustomer = customer;
-            existingCustomer.setPassword(passwordEncoder.encode(customer.getPassword()));
-//            existingCustomer.setBirthday(customer.getBirthday());
-//            existingCustomer.setEmailId(customer.getEmailId());
-//            existingCustomer.setCustomerName(customer.getCustomerName());
-//            existingCustomer.setGender(customer.getGender());
-//            existingCustomer.setPhoneNo(customer.getPhoneNo());
-//            existingCustomer.setRole(customer.getRole());
-            db.save(existingCustomer);
-            log.info("Suppression du client  : "+customer + "  effectué avec succès");
-            return  customer;
-
-        }else if( existingCustomer.getEmailId().equals(customer.getEmailId())) throw new CustomerAlreadyExistsException("Customer already exixts!!");
-        else throw new CustomerAlreadyExistsException("Customer already exixts!!");
-
-
+    public CustomerDto addCustomer(CustomerDto customerDto)  {
+        log.info("Ajout du client  : "+customerDto + "  en cours de traitement");
+         Customer customer = dtoMappers.fromCustomerDto(customerDto);
+         db.save(customer);
+         return dtoMappers.fromCustomer(customer);
     }
-
     @Override
-    public Customer updateCustomer(Customer customer) throws NoSuchCustomerExistsException {
-        Customer existingCustomer
-                = db.findById(customer.getUserId())
-                .orElse(null);
-        if (existingCustomer == null)
-            throw new NoSuchCustomerExistsException(
-                    "No Such Customer Exists!!");
-        else {
-
-            db.save(existingCustomer);
-            return existingCustomer;
+    public  Customer addCust(Customer customer){
+        return  db.save(customer);
+    }
+    @Override
+    public CustomerDto updateCustomer(long idCust, CustomerDto customerDto){
+        if (findCustomerById(idCust)!=null){
+            Customer exist = findCustomerById(idCust);
+            exist.setUserId(idCust);
+            exist.setEmailId(customerDto.getEmailId());
+            exist.setGender(customerDto.getGender());
+            exist.setPassword(customerDto.getPassword());
+            exist.setCustomerName(customerDto.getCustomerName());
+            exist.setPhoneNo(customerDto.getPhoneNo());
+            db.save(exist);
+            return  dtoMappers.fromCustomer(exist);
         }
+        return null;
     }
 
     @Override
-    public boolean deleteCustomer(long customerId) throws NoSuchCustomerExistsException {
-        log.info("Suppression du client  : "+customerId + "  effectué avec succès");
-        Customer existingCustomer
-                = db.findById(customerId)
-                .orElse(null);
-        if (existingCustomer == null)
-            throw new NoSuchCustomerExistsException(
-                    "No Such Customer Exists!!");
-        else {
-
-            db.deleteById(customerId);
-            return true;
-        }
+    public boolean deleteCustomer(long customerId) {
+       if (findCustomerById(customerId)!= null){
+           db.deleteById(customerId);
+           return  true;
+       }
+       return  false;
     }
 
     @Override
     public Customer findCustomerById(long customerId) throws NoSuchCustomerExistsException {
         log.info("Recherche du client  : "+customerId + "  effectué avec succès");
-        Customer existingCustomer
-                = db.findById(customerId)
-                .orElse(null);
-        if (existingCustomer == null)
-            throw new NoSuchCustomerExistsException(
-                    "No Such Customer Exists!!");
-        else {
-
-            db.findById(customerId);
-            return existingCustomer;
-        }
+        Customer customer = db.findById(customerId).orElseThrow(()-> new CustomerNotFoundException("Customer not found"));
+        return customer;
     }
-
     @Override
-    public List<Customer> getAll() {
-        return db.findAll();
+    public CustomerDto showCustomerDetails(long customerId) throws NoSuchCustomerExistsException {
+        log.info("Recherche du client  : "+customerId + "  effectué avec succès");
+        Customer customer = db.findById(customerId).orElseThrow(()-> new CustomerNotFoundException("Customer not found"));
+        CustomerDto customerDto = dtoMappers.fromCustomer(customer);
+        return customerDto;
+    }
+    @Override
+    public List<CustomerDto> getAll() {
+        List<Customer> customers = db.findAll();
+        List<CustomerDto> customerDtos= customers.stream().map(customer-> dtoMappers.fromCustomer(customer)).collect(Collectors.toList());
+        return customerDtos;
     }
 }

@@ -24,8 +24,11 @@ public class Customer extends  User {
     private Date birthday;
     private Gender gender;
     @OneToMany(mappedBy = "customer")
+    @JsonIgnore
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Account> account;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnore
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private List<Beneficiary> beneficiaries;
 }

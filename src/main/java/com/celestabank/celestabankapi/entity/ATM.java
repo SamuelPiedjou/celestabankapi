@@ -1,4 +1,5 @@
 package com.celestabank.celestabankapi.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,5 +18,6 @@ public class ATM {
     private long id;
     private String adresse;
     @OneToOne
+    @JsonIgnore
     private Account account;
 }

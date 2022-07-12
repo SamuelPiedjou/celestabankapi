@@ -1,5 +1,6 @@
 package com.celestabank.celestabankapi.controller;
 
+import com.celestabank.celestabankapi.dto.AtmDTO;
 import com.celestabank.celestabankapi.entity.ATM;
 import com.celestabank.celestabankapi.exeption.*;
 import com.celestabank.celestabankapi.service.ATMServiceImp;
@@ -17,16 +18,14 @@ public class ATMController {
 
     @PostMapping("/add")
     @ApiOperation(value = "Ajout d'un ATM")
-    public ATM addATM(@RequestBody ATM atm) throws ATMAlreadyExistsException {
-        return atmServiceImp.addAtm(atm);
+    public AtmDTO addATM(@RequestBody AtmDTO atmDTO)  {
+        return atmServiceImp.addAtm(atmDTO);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{idAtm}")
     @ApiOperation(value = "MAJ d'un ATM")
-    public ATM updateAtm(@RequestBody ATM atm) throws ATMAlreadyExistsException  {
-
-            return atmServiceImp.updateAtm(atm);
-
+    public AtmDTO updateAtm(@PathVariable long idAtm ,@RequestBody AtmDTO atmDTO) throws ATMAlreadyExistsException  {
+            return atmServiceImp.updateAtm(idAtm,atmDTO);
     }
 
     @DeleteMapping("/delete/{atmId}")
@@ -40,10 +39,7 @@ public class ATMController {
     @GetMapping("/find/{atmId}")
     @ApiOperation(value = "RECHERCHER UN  ATM")
     public ATM findAtmByID(@PathVariable long atmId) throws DetailsNotFoundException {
-
         return atmServiceImp.getAtmById(atmId);
-
-
     }
     @GetMapping("/allAtm")
     @ApiOperation(value = "LISTER LES ATM")
@@ -52,5 +48,6 @@ public class ATMController {
         return n;
 
     }
+
 
 }
