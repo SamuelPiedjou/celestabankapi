@@ -58,7 +58,7 @@ public class AppExceptionHandler  extends ResponseEntityExceptionHandler {
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
     } @ExceptionHandler({CustomerAlreadyHaveAnAccountException.class})
     public ResponseEntity<Object> handleCustomerHaveAccount(CustomerAlreadyHaveAnAccountException ex , WebRequest request){
-        HttpStatus notFound = HttpStatus.METHOD_NOT_ALLOWED;
+        HttpStatus notFound = HttpStatus.BAD_REQUEST;
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
     }
     @ExceptionHandler({CustomerNotFoundException.class})

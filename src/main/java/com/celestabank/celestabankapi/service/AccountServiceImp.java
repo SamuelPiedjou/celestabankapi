@@ -1,11 +1,14 @@
 package com.celestabank.celestabankapi.service;
 
+import com.celestabank.celestabankapi.dto.AccountDto;
+import com.celestabank.celestabankapi.dto.CustomerDto;
 import com.celestabank.celestabankapi.entity.*;
 import com.celestabank.celestabankapi.enums.AccountStatus;
 import com.celestabank.celestabankapi.enums.AccountType;
 import com.celestabank.celestabankapi.enums.TransactionStatus;
 import com.celestabank.celestabankapi.enums.TransactionType;
 import com.celestabank.celestabankapi.exeption.*;
+import com.celestabank.celestabankapi.mappers.BankServiceMapper;
 import com.celestabank.celestabankapi.repository.AccountRepository;
 import com.celestabank.celestabankapi.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
@@ -27,17 +30,29 @@ public class AccountServiceImp implements AccountService {
     private AccountRepository accountRepository;
     private TransactionServiceImpl transactionService;
     private CustomerRepository customerRepository;
-
+    private final BankServiceMapper dtoMappers;
+    private final CustomerServiceImpl customerService;
 
     public boolean customerExist(long customerId) throws CustomerNotFoundException {
         customerRepository.findById(customerId).orElseThrow(()-> new CustomerNotFoundException("CUSTOMER NOT FOUNDD"));
         return true;
     }
-    public boolean customerCheckAccountExist(long accountId,long customerId){
-        Customer customer = customerRepository.findById(customerId).orElse(null);
-        Account account  = accountRepository.findById(accountId).orElse(null);
-        if(customer.getAccount().isEmpty())return  true ;
-        else return false;
+    public boolean customerCheckCurrentAccountExist( long customerId){
+        Customer customer= customerRepository.findById(customerId).orElse(null);
+        List <Account> accounts =  customer.getAccount();
+        if (accounts.stream().anyMatch(account -> account.getAccountType().equals(AccountType.COURANT) )){
+            return  false;
+        }else  return  true;
+    }
+
+
+
+    public boolean customerCheckSavingAccountExist( long customerId){
+        Customer customer= customerRepository.findById(customerId).orElse(null);
+        List <Account> accounts =  customer.getAccount();
+        if (accounts.stream().anyMatch(account -> account.getAccountType().equals(AccountType.EPARGNE) )){
+            return  false;
+        }else  return  true;
     }
 
 //    public Account CheckTypeAccount(long customerId){
@@ -62,46 +77,48 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) {
-        log.info("CREATING CURREENT ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
+    public AccountDto saveCurrentBankAccount(double initialBalance, long customerId) {
+        log.info("CREATING CURrENT ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
         Customer customer= customerRepository.findById(customerId).orElse(null);
+        CustomerDto customerDto = dtoMappers.fromCustomer(customer);
         if(customerExist(customerId) ){
-            if (customerCheckAccountExist(customerId)){
-                CurrentAccount currentAccount=new CurrentAccount();
-                currentAccount.setAccountId((long) (Math.random()*(999999999- 1)+123456719));
-                currentAccount.setCreatedAt(new Date());
-                currentAccount.setBalance(initialBalance);
-                currentAccount.setOverDraft( currentAccount.getOverDraft());
-                currentAccount.setCustomer(customer);
-                currentAccount.setAccountType(AccountType.COURANT);
-                currentAccount.setAccountStatus(AccountStatus.CREATED);
-                currentAccount.setOverDraft(currentAccount.getOverDraft());
+            CurrentAccount currentAccount=new CurrentAccount();
+            currentAccount.setAccountId((long) (Math.random()*(999999999- 1)+123456719));
+            currentAccount.setCreatedAt(new Date());
+            currentAccount.setBalance(initialBalance);
+            currentAccount.setOverDraft( currentAccount.getOverDraft());
+            currentAccount.setCustomer(customer);
+            currentAccount.setAccountType(AccountType.COURANT);
+            currentAccount.setAccountStatus(AccountStatus.CREATED);
+            currentAccount.setOverDraft(currentAccount.getOverDraft());
+            if (customerCheckCurrentAccountExist(customerId)){
                 CurrentAccount savedBankAccount = accountRepository.save(currentAccount);
                 log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ currentAccount.getAccountId() +" and your balance id "+currentAccount.getBalance());
-                return savedBankAccount;
-            }else throw  new CustomerAlreadyHaveAnAccountException("THE CUSTOMER \"+ customer+\" HAVE AN ACCOUNT !!!!");
+                AccountDto currentAccountDTO =  dtoMappers.fromAccount(savedBankAccount);
+                currentAccountDTO.setCustomerDto(customerDto);
+                return  currentAccountDTO;
+            }else throw  new CustomerAlreadyHaveAnAccountException("THE CUSTOMER "+ customerId +" HAVE AN ACCOUNT !!!!");
         }else throw new  CustomerNotFoundException("NO CUSTOMER WITH THIS ACCOUNT ID EXIST");
     }
-
     @Override
     public SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException {
         log.info("CREATING SAVING ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
         Customer customer= customerRepository.findById(customerId).orElse(null);
         if(customerExist(customerId) ){
-            if (customerCheckAccountExist(customerId)){
-                SavingAccount savingAccount=new SavingAccount();
-                savingAccount.setAccountId((long) (Math.random()*(99999999- 1)+00000001));
-                savingAccount.setCreatedAt(new Date());
-                savingAccount.setAccountStatus(AccountStatus.CREATED);
-                savingAccount.setBalance(initialBalance);
-                savingAccount.setMinBalance( savingAccount.getMinBalance());
-                savingAccount.setCustomer(customer);
-                savingAccount.setAccountType(AccountType.EPARGNE);
-                savingAccount.setAccountStatus(AccountStatus.CREATED);
+            SavingAccount savingAccount=new SavingAccount();
+            savingAccount.setAccountId((long) (Math.random()*(99999999- 1)+00000001));
+            savingAccount.setCreatedAt(new Date());
+            savingAccount.setAccountStatus(AccountStatus.CREATED);
+            savingAccount.setBalance(initialBalance);
+            savingAccount.setMinBalance( savingAccount.getMinBalance());
+            savingAccount.setCustomer(customer);
+            savingAccount.setAccountType(AccountType.EPARGNE);
+            savingAccount.setAccountStatus(AccountStatus.CREATED);
+            if (customerCheckSavingAccountExist(customerId)){
                 SavingAccount savedBankAccount = accountRepository.save(savingAccount);
-                log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ savedBankAccount.getAccountId() +" and your balance id "+savedBankAccount.getBalance());
+                log.info("CREATING SAVING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ savedBankAccount.getAccountId() +" and your balance id "+savedBankAccount.getBalance());
                 return savedBankAccount;
-            }else new CustomerAlreadyHaveAnAccountException("THE CUSTOMER \"+ customer+\" HAVE AN ACCOUNT !!!!");
+            }else new CustomerAlreadyHaveAnAccountException("THE CUSTOMER "+ customerId +" HAVE AN ACCOUNT !!!!");
         }else new  CustomerNotFoundException("NO CUSTOMER WITH THIS ACCOUNT ID EXIST");
         return null;
 
@@ -194,13 +211,18 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Account viewSavingAcc(long customerId) {
-        return (Account) accountRepository.viewSavingAcc(customerId);
+    public AccountDto viewSavingAcc(long accountId ) {
+        Account account= accountRepository.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("COMPTE EPARGNE INEXISTANT"));
+        AccountDto accountDto =dtoMappers.fromAccount(account);
+        accountDto.setCustomerDto(dtoMappers.fromCustomer(account.getCustomer()));
+            return  accountDto;
     }
-
     @Override
-    public Account viewCurrentAcc(long customerId) {
-        return accountRepository.viewTermAcc(customerId);
+    public AccountDto viewCurrentAcc(long accountId ) {
+        Account account= accountRepository.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("COMPTE EPARGNE INEXISTANT"));
+        AccountDto accountDto =dtoMappers.fromAccount(account);
+        accountDto.setCustomerDto(dtoMappers.fromCustomer(account.getCustomer()));
+        return  accountDto;
     }
 
     @Override

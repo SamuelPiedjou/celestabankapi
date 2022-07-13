@@ -1,8 +1,10 @@
 package com.celestabank.celestabankapi.mappers;
 
+import com.celestabank.celestabankapi.dto.AccountDto;
 import com.celestabank.celestabankapi.dto.AtmDTO;
 import com.celestabank.celestabankapi.dto.CustomerDto;
 import com.celestabank.celestabankapi.entity.ATM;
+import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.Customer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -30,5 +32,15 @@ public class BankServiceMapper {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customerDto,customer);
         return customer;
+    }
+    public AccountDto fromAccount(Account account){
+        AccountDto accountDto = new AccountDto();
+        BeanUtils.copyProperties(account,accountDto);
+        return accountDto;
+    }
+    public Account fromAccountDto(AccountDto accountDto){
+        Account account = new Account();
+        BeanUtils.copyProperties(accountDto, account);
+        return account;
     }
 }

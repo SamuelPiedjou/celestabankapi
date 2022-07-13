@@ -38,14 +38,8 @@ public class AccountController {
 
     @PostMapping("/current")
     @ApiOperation(value = "CREER COMPTE COURANT")
-    public CurrentAccount addCurrentAcc(@RequestBody CurrentAccountDTO currentAccountDTO) throws CustomerNotFoundException, CustomerAlreadyHaveAnAccountException  {
-         CurrentAccount t = null;
-        try{
-            t = accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getInitialBalance(), currentAccountDTO.getCustomerId());
-        }catch (RuntimeException e){
-             e.printStackTrace();
-        }
-        return  t;
+    public AccountDto addCurrentAcc(@RequestBody CurrentAccountDTO currentAccountDTO) {
+       return accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getBalance(), currentAccountDTO.getCustomerId());
     }
 
     @DeleteMapping("/closeSavingAcc/{accountId}")
@@ -173,28 +167,16 @@ public class AccountController {
 
     }
 
-    @GetMapping("findSaving/{customerId}")
+    @GetMapping("findSaving/{accountId}")
     @ApiOperation(value = "CONSULTER UN COMPTE EPARGNE")
-    public Account viewSavingAccount(@PathVariable long customerId) {
-
-        try{
-            return (Account) accountServiceImp.viewSavingAcc(customerId);
-        }catch (RuntimeException e){
-            e.printStackTrace();
-        }
-        return null;
+    public AccountDto viewSavingAccount(@PathVariable long accountId) {
+            return accountServiceImp.viewSavingAcc(accountId);
     }
 
-    @GetMapping("findCurrent/{customerId}")
+    @GetMapping("findCurrent/{accountId}")
     @ApiOperation(value = "CONSULTER UN COMPTE COURANT")
-    public Account viewCurrentAccount(@PathVariable long customerId) {
-
-        try{
-            return accountServiceImp.viewCurrentAcc(customerId);
-        }catch(RuntimeException e){
-            e.printStackTrace();
-        }
-        return null;
+    public AccountDto viewCurrentAccount(@PathVariable long accountId) {
+            return accountServiceImp.viewCurrentAcc(accountId);
     }
 
     @PostMapping("transfer")

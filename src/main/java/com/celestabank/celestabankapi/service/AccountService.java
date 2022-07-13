@@ -1,5 +1,6 @@
 package com.celestabank.celestabankapi.service;
 
+import com.celestabank.celestabankapi.dto.AccountDto;
 import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
@@ -18,7 +19,7 @@ public interface AccountService {
     //    }
     SavingAccount savingAccount(double initialBaln, long idMachine);
 
-    CurrentAccount saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
+    AccountDto saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
 
     SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
 
@@ -43,9 +44,10 @@ public interface AccountService {
     Transaction withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
 
     List<Account> viewAccounts(long accountId);
-    Account viewSavingAcc(long customerId);
 
-    Account viewCurrentAcc(long customerId);
+    AccountDto viewSavingAcc(long accountId);
+
+    AccountDto viewCurrentAcc(long customerId);
 
     boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
 }
