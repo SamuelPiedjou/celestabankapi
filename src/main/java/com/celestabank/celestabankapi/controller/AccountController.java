@@ -23,51 +23,30 @@ public class AccountController {
 
 
 
-    @PostMapping("/savings")
+    @PostMapping("/savings/{idCust}")
     @ApiOperation(value = "CREER UN COMPTE EPARGNE")
-    public SavingAccount addSavingAcc(@RequestBody SavingAccountDTO savingAccount) {
-        SavingAccount t = null;
-        try{
-            t = accountServiceImp.saveSavingBankAccount(savingAccount.getInitialBalance(), savingAccount.getCustomerId());
-        }catch (RuntimeException e){
-           e.printStackTrace();
-        }
-        return  t;
-
+    public AccountDto addSavingAcc(@PathVariable long idCust, @RequestBody SavingAccountDTO savingAccountDTO) {
+            return  accountServiceImp.saveSavingBankAccount(savingAccountDTO.getBalance(), idCust);
     }
 
-    @PostMapping("/current")
+    @PostMapping("/current/{idCust}")
     @ApiOperation(value = "CREER COMPTE COURANT")
-    public AccountDto addCurrentAcc(@RequestBody CurrentAccountDTO currentAccountDTO) {
-       return accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getBalance(), currentAccountDTO.getCustomerId());
+    public AccountDto addCurrentAcc(@PathVariable long idCust, @RequestBody CurrentAccountDTO currentAccountDTO) {
+       return accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getBalance(), idCust);
     }
 
     @DeleteMapping("/closeSavingAcc/{accountId}")
     @ApiOperation(value = "FERMER UN COMPTE EPARGNE SOUS LA BASE DE SON ID")
     public boolean closeSavingAcc(@PathVariable long accountId)   {
-        if (accountId !=0){
-            try{
                 accountServiceImp.deleteSavingId(accountId);
-                return  true;
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
+                return true;
     }
 
     @DeleteMapping("/closeCurrentAcc/{accountId}")
     @ApiOperation(value = "FERMER UN COMPTE COURANT SOUS LA BASE DE SON ID")
     public boolean closeCurrentAcc(@PathVariable long accountId)   {
-        if (accountId !=0){
-            try{
-                accountServiceImp.deleteCurrentId(accountId);
-                return true;
-            } catch (RuntimeException e) {
-                 e.printStackTrace();
-            }
-        }
-        return false;
+        accountServiceImp.deleteCurrentId(accountId);
+        return true;
     }
 
     @GetMapping("/findAcc/{accountId}")
@@ -80,11 +59,7 @@ public class AccountController {
     @ApiOperation(value = "MAJ UN COMPTE EPARGNE")
     public SavingAccount updateSavingsAccount(@RequestBody SavingAccount updS) throws InvalidDetailsException {
         SavingAccount t = null;
-        try {
             t = accountServiceImp.updateSavingAccount(updS);
-        } catch (RuntimeException e) {
-            throw new InvalidDetailsException("Invalid details kindly check! !");
-        }
         return t;
     }
 
@@ -104,67 +79,29 @@ public class AccountController {
     @PostMapping("/accounts/deposit")
     @ApiOperation(value = "EFFECTUER DUN DEPOT DANS UN COMPTE")
     public Transaction deposit(@RequestBody DepositDTO depositDTO )   {
-        Transaction t = null;
-        try{
            return accountServiceImp.deposit( depositDTO.getAccountId(),depositDTO.getAmount(),depositDTO.getRemark());
-
-        }catch(RuntimeException e){
-            e.printStackTrace();
-        }
-        return  t;
     }
 
     @PostMapping("/withdraw/")
     @ApiOperation(value = "OPERATION DE RETRAIT DANS UN COMPTE")
     public Transaction withdraw(@RequestBody WithdrawlDTO withdrawlDTO )   {
-        Transaction t = null;
-        try{
             return accountServiceImp.withdraw(withdrawlDTO.getAmount(), withdrawlDTO.getAccountId(), withdrawlDTO.getRemark());
-        }catch(RuntimeException e){
-            e.printStackTrace();
-        }
-        return  t;
-
     }
     
     @PutMapping("/suspend/{accoountId}")
     @ApiOperation(value = "DESACTIVER UN COMPTE ")
-    public AccountStatus suspendAcc(@PathVariable long accoountId)   {
-        AccountStatus status= AccountStatus.CREATED;
-        try{
-            status= accountServiceImp.suspendAccount(accoountId);
-        }catch (RuntimeException e){
-            e.printStackTrace();
-            
-        }
-        return  status;
+    public AccountDto suspendAcc(@PathVariable long accoountId)   {
+         return accountServiceImp.suspendAccount(accoountId);
     }
     @PutMapping("/activeAcc/{accoountId}")
     @ApiOperation(value = "ACTIVER UN COMPTE")
-    public AccountStatus activate(@PathVariable long accoountId)   {
-        AccountStatus status= AccountStatus.CREATED;
-        try{
-            status= accountServiceImp.activateAccount(accoountId);
-        }catch (RuntimeException e){
-            e.printStackTrace();
-
-        }
-        return  status;
+    public AccountDto activate(@PathVariable long accoountId)   {
+        return accountServiceImp.activateAccount(accoountId);
     }
-
-
-    @GetMapping("find/{customerId}")
-    @ApiOperation(value = "CONSULTER UN COMPTE")
-    public List<Account> viewAccount(@PathVariable long customerId) throws InvalidDetailsException {
-        List<Account> a = null;
-        try {
-            a = accountServiceImp.viewAccounts(customerId);
-        } catch (Exception e) {
-            throw new InvalidDetailsException("Invalid details kindly check!");
-        }
-
-        return a;
-
+    @GetMapping("/listAccount")
+    @ApiOperation(value = "LISTE DES COMPTES")
+    public List<AccountDto> listAccount(){
+        return accountServiceImp.listAccounts();
     }
 
     @GetMapping("findSaving/{accountId}")

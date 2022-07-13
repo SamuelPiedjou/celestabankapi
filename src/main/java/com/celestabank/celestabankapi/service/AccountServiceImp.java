@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -79,7 +80,7 @@ public class AccountServiceImp implements AccountService {
     @Override
     public AccountDto saveCurrentBankAccount(double initialBalance, long customerId) {
         log.info("CREATING CURrENT ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
-        Customer customer= customerRepository.findById(customerId).orElse(null);
+        Customer customer= customerRepository.findById(customerId).orElseThrow(()->new CustomerNotFoundException("CUSTOMER NOT FOUND ! ! !"));
         CustomerDto customerDto = dtoMappers.fromCustomer(customer);
         if(customerExist(customerId) ){
             CurrentAccount currentAccount=new CurrentAccount();
@@ -93,7 +94,7 @@ public class AccountServiceImp implements AccountService {
             currentAccount.setOverDraft(currentAccount.getOverDraft());
             if (customerCheckCurrentAccountExist(customerId)){
                 CurrentAccount savedBankAccount = accountRepository.save(currentAccount);
-                log.info("CREATING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ currentAccount.getAccountId() +" and your balance id "+currentAccount.getBalance());
+                log.info("CREATING CURRENT ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ currentAccount.getAccountId() +" and your balance id "+currentAccount.getBalance());
                 AccountDto currentAccountDTO =  dtoMappers.fromAccount(savedBankAccount);
                 currentAccountDTO.setCustomerDto(customerDto);
                 return  currentAccountDTO;
@@ -101,9 +102,10 @@ public class AccountServiceImp implements AccountService {
         }else throw new  CustomerNotFoundException("NO CUSTOMER WITH THIS ACCOUNT ID EXIST");
     }
     @Override
-    public SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException {
+    public AccountDto saveSavingBankAccount(double initialBalance, long customerId) throws CustomerNotFoundException {
         log.info("CREATING SAVING ACCOUNT OF CUSTOMER "+ customerId +" IN PROCESS");
-        Customer customer= customerRepository.findById(customerId).orElse(null);
+        Customer customer= customerRepository.findById(customerId).orElseThrow(()->new CustomerNotFoundException("CUSTOMER NOT FOUND ! ! !"));
+        CustomerDto customerDto = dtoMappers.fromCustomer(customer);
         if(customerExist(customerId) ){
             SavingAccount savingAccount=new SavingAccount();
             savingAccount.setAccountId((long) (Math.random()*(99999999- 1)+00000001));
@@ -117,11 +119,11 @@ public class AccountServiceImp implements AccountService {
             if (customerCheckSavingAccountExist(customerId)){
                 SavingAccount savedBankAccount = accountRepository.save(savingAccount);
                 log.info("CREATING SAVING ACCOUNT SUCCESSFUL ! YOUR ACCOUNT N° is "+ savedBankAccount.getAccountId() +" and your balance id "+savedBankAccount.getBalance());
-                return savedBankAccount;
-            }else new CustomerAlreadyHaveAnAccountException("THE CUSTOMER "+ customerId +" HAVE AN ACCOUNT !!!!");
-        }else new  CustomerNotFoundException("NO CUSTOMER WITH THIS ACCOUNT ID EXIST");
-        return null;
-
+                AccountDto savingAccountDTO = dtoMappers.fromAccount(savedBankAccount);
+                savingAccountDTO.setCustomerDto(customerDto);
+                return savingAccountDTO;
+            }else throw new CustomerAlreadyHaveAnAccountException("THE CUSTOMER "+ customerId +" HAVE AN ACCOUNT !!!!");
+        }else throw  new  CustomerNotFoundException("NO CUSTOMER WITH THIS ACCOUNT ID EXIST");
     }
 
 
@@ -189,26 +191,31 @@ public class AccountServiceImp implements AccountService {
         }
     }
     @Override
-    public AccountStatus activateAccount(long accountId) throws BankAccountNotFoundException {
+    public AccountDto activateAccount(long accountId) throws BankAccountNotFoundException {
         Account account =getBankAccount(accountId);
         account.setAccountStatus(AccountStatus.ACTIVATED);
         accountRepository.saveAndFlush(account);
         log.info("THIS ACCOUNT WAS ACTIVATED");
-        return account.getAccountStatus();
+        AccountDto accountDto = new AccountDto(account);
+        return accountDto;
     }
     @Override
-    public AccountStatus suspendAccount(long accountId) throws BankAccountNotFoundException {
+    public AccountDto suspendAccount(long accountId) throws BankAccountNotFoundException {
         Account account =getBankAccount(accountId);
         account.setAccountStatus(AccountStatus.SUSPENDED);
         accountRepository.saveAndFlush(account);
+        AccountDto accountDto = new AccountDto(account);
         log.info("THIS ACCOUNT WAS SUSPENDED");
-        return account.getAccountStatus();
+        return accountDto;
     }
 
     @Override
-    public List<Account> viewAccounts(long accountId) {
-        return accountRepository.findAll();
+    public List<AccountDto> listAccounts(){
+        List<Account> accounts = accountRepository.findAll();
+        List<AccountDto> accountDtos =  accounts.stream().map(account -> new AccountDto(account)).collect(Collectors.toList());
+        return accountDtos;
     }
+
 
     @Override
     public AccountDto viewSavingAcc(long accountId ) {
@@ -262,14 +269,14 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Transaction withdraw(double amount, long accountId, String remark) throws BankAccountNotFoundException, BankAccountNotActivatedException, BankAccountSuspendedException {
-        Account a = accountRepository.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("Bank Account not Found 404 !"));
+    public Transaction withdraw(double amount, long accountId, String remark) {
+        Account a = accountRepository.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("Bank Account not Found "));
         Transaction t = new Transaction();
         if (a != null){
             if(a instanceof  SavingAccount){
                 if(a.getAccountStatus().equals(AccountStatus.CREATED)){
-                    throw new BankAccountNotActivatedException("PLEASE CONTACT THE ADMINISTRATION TO ACTIVE YOUR ACCOUNT");
-                 }else if (a.getAccountStatus().equals(AccountStatus.SUSPENDED)){throw new BankAccountSuspendedException("YOUR ACCOUNT IT'S BLOCKED CONTACT THE ADMINISTRATOR");
+                      new BankAccountNotActivatedException("YOUR ACCOUNT IS NOT ACTIVATED  ! PLEASE CONTACT THE ADMINISTRATION TO ACTIVE YOUR ACCOUNT");
+                 }else if (a.getAccountStatus().equals(AccountStatus.SUSPENDED)){  new BankAccountSuspendedException("YOUR ACCOUNT IS BLOCKED, CONTACT THE ADMINISTRATOR");
                 }else {
                     if ((a.getBalance() - ((SavingAccount) a).getMinBalance())>amount ){
                         double balance = a.getBalance() - amount;
@@ -293,6 +300,7 @@ public class AccountServiceImp implements AccountService {
                         t.setTransactionRemarks(remark);
                         t.setAccountId(accountId);
                         t.setTransactionStatus(TransactionStatus.FAILED);
+                        t.setReason("SOLDE INSUFFISANT");
                         transactionService.createTransaction(t);
                         return t;
                     }
@@ -300,9 +308,9 @@ public class AccountServiceImp implements AccountService {
 
             }else {
                 if (a.getAccountStatus().equals(AccountStatus.CREATED)) {
-                    throw new BankAccountNotActivatedException("PLEASE CONTACT THE ADMINISTRATION TO ACTIVE YOUR ACCOUNT");
+                      new BankAccountNotActivatedException("PLEASE CONTACT THE ADMINISTRATION TO ACTIVE YOUR ACCOUNT");
                 } else if (a.getAccountStatus().equals(AccountStatus.SUSPENDED)) {
-                    throw new BankAccountSuspendedException("YOUR ACCOUNT IT'S BLOCKED CONTACT THE ADMINISTRATOR");
+                      new BankAccountSuspendedException("YOUR ACCOUNT IT'S BLOCKED CONTACT THE ADMINISTRATOR");
                 } else {
                     if ((a.getBalance() - ((CurrentAccount) a).getOverDraft()) > amount) {
                         double balance = a.getBalance() - amount;

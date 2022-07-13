@@ -22,13 +22,13 @@ public class AccountDto {
     private AccountType accountType;
     private CustomerDto customerDto;
 
-    public AccountDto(Account account, CustomerDto customerDto){
+    public AccountDto(Account account){
         this.accountId= account.getAccountId();
         this.accountStatus= account.getAccountStatus();
         this.accountType= account.getAccountType();
         this.balance=account.getBalance();
         this.createdAt=account.getCreatedAt();
-        this.customerDto =customerDto;
+        this.customerDto =new CustomerDto(account);
     }
 
     public AccountDto() {

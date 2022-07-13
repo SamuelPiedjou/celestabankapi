@@ -5,7 +5,6 @@ import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
 import com.celestabank.celestabankapi.entity.Transaction;
-import com.celestabank.celestabankapi.enums.AccountStatus;
 import com.celestabank.celestabankapi.exeption.*;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public interface AccountService {
 
     AccountDto saveCurrentBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
 
-    SavingAccount saveSavingBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
+    AccountDto saveSavingBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
 
     boolean deleteSavingId(long accountId) throws  InvalidDetailsException;
 
@@ -35,15 +34,15 @@ public interface AccountService {
 
     double SoldeCompte(long accountId) throws BankAccountNotFoundException;
 
-    AccountStatus activateAccount(long accountId) throws BankAccountNotFoundException;
+    AccountDto activateAccount(long accountId) throws BankAccountNotFoundException;
 
-    AccountStatus suspendAccount(long accountId) throws BankAccountNotFoundException;
+    AccountDto suspendAccount(long accountId) throws BankAccountNotFoundException;
 
     Transaction deposit(long accountId, double amount, String remark) throws BankAccountNotFoundException;
 
     Transaction withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
 
-    List<Account> viewAccounts(long accountId);
+    List<AccountDto> listAccounts();
 
     AccountDto viewSavingAcc(long accountId);
 
