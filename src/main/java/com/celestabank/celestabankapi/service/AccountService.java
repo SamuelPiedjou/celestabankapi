@@ -1,10 +1,10 @@
 package com.celestabank.celestabankapi.service;
 
 import com.celestabank.celestabankapi.dto.AccountDto;
+import com.celestabank.celestabankapi.dto.TransactionDTO;
 import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
-import com.celestabank.celestabankapi.entity.Transaction;
 import com.celestabank.celestabankapi.exeption.*;
 
 import java.util.List;
@@ -22,9 +22,9 @@ public interface AccountService {
 
     AccountDto saveSavingBankAccount(double initialBalance, long customerId) throws CustomerAlreadyHaveAnAccountException, CustomerNotFoundException;
 
-    boolean deleteSavingId(long accountId) throws  InvalidDetailsException;
 
-    boolean deleteCurrentId(long accountId) throws InvalidDetailsException;
+
+    boolean deleteAcc(long accountId);
 
     Account getBankAccount(long accountId) throws BankAccountNotFoundException;
 
@@ -38,9 +38,11 @@ public interface AccountService {
 
     AccountDto suspendAccount(long accountId) throws BankAccountNotFoundException;
 
-    Transaction deposit(long accountId, double amount, String remark) throws BankAccountNotFoundException;
+    AccountDto viewAcc(long accountId);
 
-    Transaction withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
+    TransactionDTO deposit(long accountId, double amount, String remark) throws BankAccountNotFoundException;
+
+    TransactionDTO withdraw(double amount, long accountId, String remark) throws BalanceNotSufficientException, BankAccountNotFoundException, InvalidDetailsOperation, BankAccountNotActivatedException, BankAccountSuspendedException;
 
     List<AccountDto> listAccounts();
 
@@ -48,5 +50,5 @@ public interface AccountService {
 
     AccountDto viewCurrentAcc(long customerId);
 
-    boolean transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException, BankAccountNotActivatedException, BankAccountSuspendedException;
+    List<TransactionDTO> transfer(long senderAccountId, long reciverAccountId, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsOperation, BankAccountNotActivatedException, BankAccountSuspendedException;
 }

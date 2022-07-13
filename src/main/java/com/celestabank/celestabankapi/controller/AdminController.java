@@ -3,10 +3,9 @@ package com.celestabank.celestabankapi.controller;
 import com.celestabank.celestabankapi.entity.Admin;
 import com.celestabank.celestabankapi.exeption.AdminNotFoundException;
 import com.celestabank.celestabankapi.exeption.DetailsNotFoundException;
-import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
+import com.celestabank.celestabankapi.exeption.InvalidDetailsOperation;
 import com.celestabank.celestabankapi.service.AdminServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +18,11 @@ public class AdminController {
     private final AdminServiceImpl adminService;
 
     @PostMapping("/add")
-    public Admin addAdmin(@RequestBody Admin admin) throws InvalidDetailsException {
+    public Admin addAdmin(@RequestBody Admin admin) throws InvalidDetailsOperation {
        return  adminService.addAdmin(admin);
     }
     @PutMapping("/update/{id}")
-    public Admin updateAdmin(@RequestBody Admin admin,@PathVariable long id) throws InvalidDetailsException, AdminNotFoundException{
+    public Admin updateAdmin(@RequestBody Admin admin,@PathVariable long id) throws InvalidDetailsOperation, AdminNotFoundException{
         return adminService.updateAdmin(id, admin);
     }
     @DeleteMapping("/delete/{adminId}")

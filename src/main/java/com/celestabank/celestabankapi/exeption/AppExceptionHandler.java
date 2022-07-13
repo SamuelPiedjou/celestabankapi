@@ -28,7 +28,7 @@ public class AppExceptionHandler  extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler({BalanceNotSufficientException.class})
     public ResponseEntity<Object> handleBalanceNotSufficient(BalanceNotSufficientException ex , WebRequest request){
-        HttpStatus notFound = HttpStatus.BAD_REQUEST;
+        HttpStatus notFound = HttpStatus.OK;
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
     }
     @ExceptionHandler({BankAccountNotFoundException.class})
@@ -36,15 +36,22 @@ public class AppExceptionHandler  extends ResponseEntityExceptionHandler {
         HttpStatus notFound = HttpStatus.NOT_FOUND;
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
     }
+    @ExceptionHandler({InvalidDetailsOperation.class})
+    public ResponseEntity<Object> handleInvalidDetails(InvalidDetailsOperation ex , WebRequest request){
+        HttpStatus notFound = HttpStatus.OK;
+        return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
+    }
     @ExceptionHandler({BankAccountNotActivatedException.class})
     public ResponseEntity<Object> handleBankNotActive(BankAccountNotActivatedException ex , WebRequest request){
         HttpStatus notFound = HttpStatus.METHOD_NOT_ALLOWED;
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
-    } @ExceptionHandler({BankAccountSuspendedException.class})
+    }
+    @ExceptionHandler({BankAccountSuspendedException.class})
     public ResponseEntity<Object> handleBankSuspended(BankAccountSuspendedException ex , WebRequest request){
         HttpStatus notFound = HttpStatus.METHOD_NOT_ALLOWED;
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
-    } @ExceptionHandler({BeneficiaryNotFoundException.class})
+    }
+    @ExceptionHandler({BeneficiaryNotFoundException.class})
     public ResponseEntity<Object> handleBeneficiaryNotFound(BeneficiaryNotFoundException ex , WebRequest request){
         HttpStatus notFound = HttpStatus.NOT_FOUND;
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
@@ -58,7 +65,7 @@ public class AppExceptionHandler  extends ResponseEntityExceptionHandler {
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
     } @ExceptionHandler({CustomerAlreadyHaveAnAccountException.class})
     public ResponseEntity<Object> handleCustomerHaveAccount(CustomerAlreadyHaveAnAccountException ex , WebRequest request){
-        HttpStatus notFound = HttpStatus.BAD_REQUEST;
+        HttpStatus notFound = HttpStatus.OK;
         return   new ResponseEntity<Object>(new ApiError(ex.getMessage(), notFound, LocalDateTime.now()), notFound);
     }
     @ExceptionHandler({CustomerNotFoundException.class})

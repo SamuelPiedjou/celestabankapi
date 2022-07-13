@@ -8,7 +8,6 @@ import lombok.Data;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Data
@@ -26,7 +25,7 @@ public class TransactionDTO {
     private AccountDto account;
     private String reason;
 
-    public TransactionDTO(Transaction transaction, AccountDto accountDto) {
+    public TransactionDTO(Transaction transaction , Account account) {
         this.transactionId = transaction.getTransactionId();
         this.amount = transaction.getAmount();
         this.transactionType = transaction.getTransactionType();
@@ -34,7 +33,10 @@ public class TransactionDTO {
         this.transactionStatus = transaction.getTransactionStatus();
         this.transactionRemarks = transaction.getTransactionRemarks();
         this.accountId = transaction.getAccountId();
-        this.account = accountDto;
+        this.account = new AccountDto(account);
         this.reason = transaction.getReason();
+    }
+    public TransactionDTO(){
+
     }
 }

@@ -4,8 +4,6 @@ import com.celestabank.celestabankapi.dto.*;
 import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.CurrentAccount;
 import com.celestabank.celestabankapi.entity.SavingAccount;
-import com.celestabank.celestabankapi.entity.Transaction;
-import com.celestabank.celestabankapi.enums.AccountStatus;
 import com.celestabank.celestabankapi.exeption.*;
 import com.celestabank.celestabankapi.service.AccountServiceImp;
 import io.swagger.annotations.ApiOperation;
@@ -35,18 +33,10 @@ public class AccountController {
        return accountServiceImp.saveCurrentBankAccount(currentAccountDTO.getBalance(), idCust);
     }
 
-    @DeleteMapping("/closeSavingAcc/{accountId}")
-    @ApiOperation(value = "FERMER UN COMPTE EPARGNE SOUS LA BASE DE SON ID")
-    public boolean closeSavingAcc(@PathVariable long accountId)   {
-                accountServiceImp.deleteSavingId(accountId);
-                return true;
-    }
-
-    @DeleteMapping("/closeCurrentAcc/{accountId}")
+    @DeleteMapping("/closeAccount/{accountId}")
     @ApiOperation(value = "FERMER UN COMPTE COURANT SOUS LA BASE DE SON ID")
     public boolean closeCurrentAcc(@PathVariable long accountId)   {
-        accountServiceImp.deleteCurrentId(accountId);
-        return true;
+       return accountServiceImp.deleteAcc(accountId);
     }
 
     @GetMapping("/findAcc/{accountId}")
@@ -57,7 +47,7 @@ public class AccountController {
 
     @PutMapping("/update/saving")
     @ApiOperation(value = "MAJ UN COMPTE EPARGNE")
-    public SavingAccount updateSavingsAccount(@RequestBody SavingAccount updS) throws InvalidDetailsException {
+    public SavingAccount updateSavingsAccount(@RequestBody SavingAccount updS) throws InvalidDetailsOperation {
         SavingAccount t = null;
             t = accountServiceImp.updateSavingAccount(updS);
         return t;
@@ -65,12 +55,12 @@ public class AccountController {
 
     @PutMapping("/update/current")
     @ApiOperation(value = "MAJ COMPTE COURANT")
-    public CurrentAccount updateCurrentAccount(@RequestBody CurrentAccount updT) throws InvalidDetailsException {
+    public CurrentAccount updateCurrentAccount(@RequestBody CurrentAccount updT) throws InvalidDetailsOperation {
         CurrentAccount t = null;
         try {
             t = accountServiceImp.updateCurrentAccount(updT);
         } catch (Exception e) {
-            throw new InvalidDetailsException("Invalid details kindly check!");
+            throw new InvalidDetailsOperation("Invalid details kindly check!");
         }
         return t;
     }
@@ -78,13 +68,13 @@ public class AccountController {
 
     @PostMapping("/accounts/deposit")
     @ApiOperation(value = "EFFECTUER DUN DEPOT DANS UN COMPTE")
-    public Transaction deposit(@RequestBody DepositDTO depositDTO )   {
+    public TransactionDTO deposit(@RequestBody DepositDTO depositDTO )   {
            return accountServiceImp.deposit( depositDTO.getAccountId(),depositDTO.getAmount(),depositDTO.getRemark());
     }
 
     @PostMapping("/withdraw/")
     @ApiOperation(value = "OPERATION DE RETRAIT DANS UN COMPTE")
-    public Transaction withdraw(@RequestBody WithdrawlDTO withdrawlDTO )   {
+    public TransactionDTO withdraw(@RequestBody WithdrawlDTO withdrawlDTO )   {
             return accountServiceImp.withdraw(withdrawlDTO.getAmount(), withdrawlDTO.getAccountId(), withdrawlDTO.getRemark());
     }
     
@@ -118,7 +108,7 @@ public class AccountController {
 
     @PostMapping("transfer")
     @ApiOperation(value = "OPERATION DE TRANSFERT D'UN COMPTE A COMPTE")
-    public boolean transferMoney(@RequestBody TransferDTO transferDTO) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsException {
+    public List<TransactionDTO> transferMoney(@RequestBody TransferDTO transferDTO) throws BankAccountNotFoundException, BalanceNotSufficientException, InvalidDetailsOperation {
         return accountServiceImp.transfer(transferDTO.getSender(), transferDTO.getReceiver(), transferDTO.getAmount());
     }
 

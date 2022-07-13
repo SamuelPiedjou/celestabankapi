@@ -1,9 +1,8 @@
 package com.celestabank.celestabankapi.controller;
 
 import com.celestabank.celestabankapi.entity.Beneficiary;
-import com.celestabank.celestabankapi.entity.Customer;
 import com.celestabank.celestabankapi.exeption.DetailsNotFoundException;
-import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
+import com.celestabank.celestabankapi.exeption.InvalidDetailsOperation;
 import com.celestabank.celestabankapi.service.BeneficiaryServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
-import java.util.Set;
 
 @RequestMapping("/beneficiary")
 @RestController
@@ -25,12 +23,12 @@ public class BeneficiaryController {
     }
 
     @PutMapping("update")@ApiOperation(value = "MAJ BENEFICIARE")
-    public Beneficiary updateBenficiary(@RequestBody Beneficiary beneficiary) throws InvalidDetailsException {
+    public Beneficiary updateBenficiary(@RequestBody Beneficiary beneficiary) throws InvalidDetailsOperation {
         Beneficiary n = null;
         try {
             n = beneficiaryService.updateBeneficiary(beneficiary);
         } catch (Exception e) {
-            throw new InvalidDetailsException("The details given are not valid!");
+            throw new InvalidDetailsOperation("The details given are not valid!");
         }
         return n;
     }

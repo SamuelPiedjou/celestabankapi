@@ -2,10 +2,7 @@ package com.celestabank.celestabankapi.controller;
 
 import com.celestabank.celestabankapi.dto.CustomerDto;
 import com.celestabank.celestabankapi.entity.Customer;
-import com.celestabank.celestabankapi.exeption.DetailsNotFoundException;
-import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
 import com.celestabank.celestabankapi.service.CustomerServiceImpl;
-import com.celestabank.celestabankapi.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
