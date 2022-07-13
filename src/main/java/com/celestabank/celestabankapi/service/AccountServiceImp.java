@@ -300,7 +300,7 @@ public class AccountServiceImp implements AccountService {
                         t.setTransactionRemarks(remark);
                         t.setAccountId(accountId);
                         t.setTransactionStatus(TransactionStatus.FAILED);
-                        t.setReason("SOLDE INSUFFISANT");
+                        t.setReason("BALANCE INSUFFICIENT");
                         transactionService.createTransaction(t);
                         return t;
                     }
