@@ -37,10 +37,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction findTransactionById(long transactionId) {
-        Transaction t = transactionRepository.findById(transactionId).get();
-        if(t !=null){
-            return t;
-        }else
+        Transaction t = transactionRepository.findById(transactionId).orElseThrow(()-> new TransactionNotFoundException("TRANSACTION NOT FOUND"));
+        if (t != null) {
+            return  t;
+        }
         return null;
     }
 

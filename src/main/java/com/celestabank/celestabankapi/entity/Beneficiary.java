@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 public class Beneficiary {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long beneficiaryId;
     private String beneficiaryName;
     private long beneficiaryAccNo;

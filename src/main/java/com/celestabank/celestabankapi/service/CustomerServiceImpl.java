@@ -1,5 +1,6 @@
 package com.celestabank.celestabankapi.service;
 
+import com.celestabank.celestabankapi.dto.CustomerALLDto;
 import com.celestabank.celestabankapi.dto.CustomerDto;
 import com.celestabank.celestabankapi.entity.Customer;
 import com.celestabank.celestabankapi.exeption.CustomerNotFoundException;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDto addCustomer(CustomerDto customerDto)  {
         log.info("Ajout du client  : "+customerDto + "  en cours de traitement");
          Customer customer = dtoMappers.fromCustomerDto(customerDto);
+         customer.setDate_Inscription(new Date());
          db.save(customer);
          return dtoMappers.fromCustomer(customer);
     }
@@ -64,17 +67,31 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = db.findById(customerId).orElseThrow(()-> new CustomerNotFoundException("Customer not found"));
         return customer;
     }
-    @Override
-    public CustomerDto showCustomerDetails(long customerId) throws NoSuchCustomerExistsException {
+
+    public CustomerDto findCustById(long customerId) throws NoSuchCustomerExistsException {
         log.info("Recherche du client  : "+customerId + "  effectué avec succès");
         Customer customer = db.findById(customerId).orElseThrow(()-> new CustomerNotFoundException("Customer not found"));
-        CustomerDto customerDto = dtoMappers.fromCustomer(customer);
-        return customerDto;
+        return dtoMappers.fromCustomer(customer);
     }
+
+    @Override
+    public CustomerALLDto showCustomerDetails(long customerId) throws NoSuchCustomerExistsException {
+        log.info("Recherche du client  : "+customerId + "  effectué avec succès");
+        Customer customer = db.findById(customerId).orElseThrow(()-> new CustomerNotFoundException("Customer not found"));
+        CustomerALLDto customerALLDto = new CustomerALLDto(customer);
+        return customerALLDto;
+    }
+
     @Override
     public List<CustomerDto> getAll() {
         List<Customer> customers = db.findAll();
         List<CustomerDto> customerDtos= customers.stream().map(customer-> dtoMappers.fromCustomer(customer)).collect(Collectors.toList());
         return customerDtos;
+    }
+    @Override
+    public List<CustomerALLDto> getAllCustWithDetailsAcc() {
+        List<Customer> customers = db.findAll();
+        List<CustomerALLDto> customerALLDtos= customers.stream().map(customer-> new CustomerALLDto(customer)).collect(Collectors.toList());
+        return customerALLDtos;
     }
 }

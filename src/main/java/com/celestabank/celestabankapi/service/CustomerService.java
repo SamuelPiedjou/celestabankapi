@@ -1,5 +1,6 @@
 package com.celestabank.celestabankapi.service;
 
+import com.celestabank.celestabankapi.dto.CustomerALLDto;
 import com.celestabank.celestabankapi.dto.CustomerDto;
 import com.celestabank.celestabankapi.entity.Customer;
 import com.celestabank.celestabankapi.exeption.NoSuchCustomerExistsException;
@@ -18,7 +19,9 @@ public interface CustomerService {
 
     Customer findCustomerById(long customerId) throws NoSuchCustomerExistsException;
 
-    CustomerDto showCustomerDetails(long customerId) throws NoSuchCustomerExistsException;
+    CustomerALLDto showCustomerDetails(long customerId) throws NoSuchCustomerExistsException;
 
     List<CustomerDto> getAll();
+
+    List<CustomerALLDto> getAllCustWithDetailsAcc();
 }

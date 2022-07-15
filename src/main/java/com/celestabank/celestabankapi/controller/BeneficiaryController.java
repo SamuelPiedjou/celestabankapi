@@ -1,5 +1,6 @@
 package com.celestabank.celestabankapi.controller;
 
+import com.celestabank.celestabankapi.dto.BeneficiaryDTO;
 import com.celestabank.celestabankapi.entity.Beneficiary;
 import com.celestabank.celestabankapi.exeption.DetailsNotFoundException;
 import com.celestabank.celestabankapi.exeption.InvalidDetailsOperation;
@@ -16,33 +17,23 @@ import java.util.List;
 @AllArgsConstructor
 public class BeneficiaryController {
     private final BeneficiaryServiceImpl beneficiaryService;
-    @PostMapping("/add")
+    @PostMapping("/add/{idCust}")
     @ApiOperation(value = "AJOUT D'UN BENEFICIAIRE")
-    public Beneficiary addBeneficiary(@RequestBody Beneficiary beneficiary)   {
-            return  beneficiaryService.addBeneficiary(beneficiary);
+    public BeneficiaryDTO addBeneficiary(@PathVariable long idCust ,@RequestBody BeneficiaryDTO beneficiaryDTO)   {
+            return  beneficiaryService.addBeneficiary(idCust,beneficiaryDTO);
     }
 
-    @PutMapping("update")@ApiOperation(value = "MAJ BENEFICIARE")
-    public Beneficiary updateBenficiary(@RequestBody Beneficiary beneficiary) throws InvalidDetailsOperation {
-        Beneficiary n = null;
-        try {
-            n = beneficiaryService.updateBeneficiary(beneficiary);
-        } catch (Exception e) {
-            throw new InvalidDetailsOperation("The details given are not valid!");
-        }
-        return n;
+    @PutMapping("/update/{idCust}")@ApiOperation(value = "MAJ BENEFICIARE")
+    public BeneficiaryDTO updateBenficiary(@PathVariable long idCust,@RequestBody BeneficiaryDTO beneficiary) throws InvalidDetailsOperation {
+         return beneficiaryService.updateBeneficiary(idCust,beneficiary);
     }
 
     @DeleteMapping("delete/{beneficiaryId}")
     @ApiOperation(value = "SUPPRIMER BENEFICIAIRE")
-    public Beneficiary deleteBeneficiary(@PathVariable long beneficiaryId) throws DetailsNotFoundException {
-        Beneficiary n = null;
-        try {
-            n = beneficiaryService.deleteBeneficiary(beneficiaryId);
-        } catch (Exception e) {
-            throw new DetailsNotFoundException("The given ID is not found!");
-        }
-        return n;
+    public boolean deleteBeneficiary(@PathVariable long beneficiaryId) throws DetailsNotFoundException {
+         return beneficiaryService.deleteBeneficiary(beneficiaryId);
+
+
     }
 
     @GetMapping("find/{beneficiaryId}")

@@ -1,19 +1,16 @@
 package com.celestabank.celestabankapi.service;
 
+import com.celestabank.celestabankapi.dto.BeneficiaryDTO;
 import com.celestabank.celestabankapi.entity.Beneficiary;
-import com.celestabank.celestabankapi.entity.Customer;
 import com.celestabank.celestabankapi.exeption.BeneficiaryNotFoundException;
-
-import java.util.Set;
 
 public interface BeneficiaryService {
 
-    Beneficiary addBeneficiary(Beneficiary beneficiary );
+    BeneficiaryDTO addBeneficiary(long customerId, BeneficiaryDTO beneficiaryDTO);
 
-    public Beneficiary updateBeneficiary(Beneficiary beneficiary);
+    BeneficiaryDTO updateBeneficiary(long idBeneficiary, BeneficiaryDTO beneficiaryDTO);
 
-    public Beneficiary deleteBeneficiary(long beneficiaryId) throws BeneficiaryNotFoundException;
+    boolean deleteBeneficiary(long beneficiaryId);
 
-    public Beneficiary findBeneficiaryById(long beneficiaryId);
-
+    Beneficiary findBeneficiaryById(long beneficiaryId);
 }
