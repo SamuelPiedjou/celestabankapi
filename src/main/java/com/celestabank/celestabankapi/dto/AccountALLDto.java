@@ -1,0 +1,32 @@
+package com.celestabank.celestabankapi.dto;
+
+import com.celestabank.celestabankapi.entity.Account;
+import com.celestabank.celestabankapi.enums.AccountStatus;
+import com.celestabank.celestabankapi.enums.AccountType;
+import lombok.Data;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import java.util.Date;
+
+@Data
+public class AccountALLDto {
+    private long accountId;
+    private double balance;
+    private Date createdAt;
+    private AccountStatus accountStatus;
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
+
+    public AccountALLDto(Account account){
+        this.accountId= account.getAccountId();
+        this.accountStatus= account.getAccountStatus();
+        this.accountType= account.getAccountType();
+        this.balance=account.getBalance();
+        this.createdAt=account.getCreatedAt();
+    }
+
+    public AccountALLDto() {
+
+    }
+}

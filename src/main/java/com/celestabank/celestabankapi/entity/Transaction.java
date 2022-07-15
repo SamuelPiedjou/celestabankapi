@@ -28,4 +28,5 @@ public class Transaction {
     private  long accountId;
     @ManyToOne
     private Account account;
+    private String reason;
 }

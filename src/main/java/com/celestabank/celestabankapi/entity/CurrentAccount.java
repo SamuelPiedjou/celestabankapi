@@ -12,6 +12,5 @@ import javax.persistence.Entity;
 @AllArgsConstructor
 @Data
 public class CurrentAccount extends  Account {
-
     private double overDraft =2000;
 }

@@ -1,19 +1,27 @@
 package com.celestabank.celestabankapi.service;
 
+import com.celestabank.celestabankapi.dto.CustomerALLDto;
+import com.celestabank.celestabankapi.dto.CustomerDto;
 import com.celestabank.celestabankapi.entity.Customer;
-import com.celestabank.celestabankapi.exeption.CustomerAlreadyExistsException;
 import com.celestabank.celestabankapi.exeption.NoSuchCustomerExistsException;
 
 import java.util.List;
 
 public interface CustomerService {
-      Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException;
 
-    Customer updateCustomer(Customer customer) throws NoSuchCustomerExistsException;
+    CustomerDto addCustomer(CustomerDto customerDto);
 
-    boolean deleteCustomer(long customerId) throws NoSuchCustomerExistsException;
+    Customer addCust(Customer customer);
 
-      Customer findCustomerById(long customerId) throws NoSuchCustomerExistsException;
+    CustomerDto updateCustomer(long idCust, CustomerDto customerDto);
 
-      List<Customer> getAll();
+    boolean deleteCustomer(long customerId);
+
+    Customer findCustomerById(long customerId) throws NoSuchCustomerExistsException;
+
+    CustomerALLDto showCustomerDetails(long customerId) throws NoSuchCustomerExistsException;
+
+    List<CustomerDto> getAll();
+
+    List<CustomerALLDto> getAllCustWithDetailsAcc();
 }

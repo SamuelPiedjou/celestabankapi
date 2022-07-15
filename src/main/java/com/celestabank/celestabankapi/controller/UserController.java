@@ -2,7 +2,7 @@ package com.celestabank.celestabankapi.controller;
 
 import com.celestabank.celestabankapi.entity.User;
 import com.celestabank.celestabankapi.exeption.DetailsNotFoundException;
-import com.celestabank.celestabankapi.exeption.InvalidDetailsException;
+import com.celestabank.celestabankapi.exeption.InvalidDetailsOperation;
 import com.celestabank.celestabankapi.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,24 +18,24 @@ public class UserController {
 
 
     @PostMapping("/add")
-    public List<User> addNewUser(@RequestBody User user) throws InvalidDetailsException {
+    public List<User> addNewUser(@RequestBody User user) throws InvalidDetailsOperation {
         List<User> n = null;
         try {
             n = userService.addNewUser(user);
         } catch (Exception e) {
-            throw new InvalidDetailsException("Invalid Details!!!");
+            throw new InvalidDetailsOperation("Invalid Details!!!");
 
         }
         return n;
     }
 
     @PutMapping("/update")
-    public List<User> updateUserInfo(@RequestBody User user) throws InvalidDetailsException {
+    public List<User> updateUserInfo(@RequestBody User user) throws InvalidDetailsOperation {
         List<User> n = null;
         try {
             n = userService.updateUserInfo(user);
         } catch (Exception e) {
-            throw new InvalidDetailsException("Invalid Details!!!");
+            throw new InvalidDetailsOperation("Invalid Details!!!");
 
         }
         return n;

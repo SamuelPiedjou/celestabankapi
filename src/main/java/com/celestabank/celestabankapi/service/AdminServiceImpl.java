@@ -24,30 +24,37 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Admin updateAdmin(Admin admin) throws AdminNotFoundException {
-        log.info("Admin",admin);
-            adminRepository.saveAndFlush(admin);
-            return admin;
-
+    public Admin updateAdmin(long idAdmin, Admin admin) throws AdminNotFoundException {
+       if (findAdminById(idAdmin)!=null){
+           Admin admin1 =findAdminById(idAdmin);
+           admin1.setAdminName(admin.getAdminName());
+           admin1.setPassword(admin.getPassword());
+           admin1.setUserId(idAdmin);
+           adminRepository.save(admin1);
+           log.info("Updating  Admin SUCCESSFUL ! "+admin+ " to "+ admin1);
+           return admin1;
+       }
+        return  null;
     }
 
     @Override
     public boolean deleteAdmin(long adminId) {
-        log.info("Supression de l'admin  " +adminId+ " ----> SUCCESSFUL" );
-        adminRepository.deleteById(adminId);
-        return true;
+        if (findAdminById(adminId)!=null){
+            log.info("Supression de l'admin  " +adminId+ " ----> SUCCESSFUL" );
+            adminRepository.deleteById(adminId);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public Admin findAdminById(long adminId) throws AccountNotFoundException {
-        Admin admin =adminRepository.findById(adminId).orElseThrow(()-> new AccountNotFoundException("SESSION INTROUVABLE !")) ;
-
+    public Admin findAdminById(long adminId) {
+        Admin admin =adminRepository.findById(adminId).orElseThrow(()-> new AdminNotFoundException("ADMINISTRATEUR INTROUVABLE !")) ;
         return admin;
     }
 
     @Override
     public List<Admin> listAllAdmin() {
-
         return adminRepository.findAll();
     }
 }
