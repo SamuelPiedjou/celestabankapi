@@ -2,7 +2,9 @@ package com.celestabank.celestabankapi.service;
 
 import com.celestabank.celestabankapi.entity.Account;
 import com.celestabank.celestabankapi.entity.Transaction;
+import com.celestabank.celestabankapi.exeption.BankAccountNotFoundException;
 import com.celestabank.celestabankapi.exeption.TransactionNotFoundException;
+import com.celestabank.celestabankapi.mappers.BankServiceMapper;
 import com.celestabank.celestabankapi.repository.AccountRepository;
 import com.celestabank.celestabankapi.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,8 @@ import java.util.List;
 public class TransactionServiceImpl implements TransactionService {
 
     private TransactionRepository transactionRepository;
+    private final BankServiceMapper dtoMapper;
+    private final AccountRepository dbb;
 
     @Override
     public Transaction createTransaction(Transaction transaction) {
@@ -43,10 +47,29 @@ public class TransactionServiceImpl implements TransactionService {
         }
         return null;
     }
+/*1025838957*/
+    @Override
+    public List<Transaction> getAllMyAccTransactions(long accountId)  {
+        Account account = dbb.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("COMPTE NON TROUVé"));
+        if(account != null){
+            List<Transaction> t =  transactionRepository.getAllMyAccTransactions(accountId);
+            return  t;
+        }
+        return null;
+    }
 
     @Override
-    public List<Transaction> getAllMyAccTransactions(long accountId) {
+    public List<Transaction> getAccByNum(long accountId)  {
+        Account account = dbb.findById(accountId).orElseThrow(()-> new BankAccountNotFoundException("COMPTE NON TROUVé"));
+        if(account != null){
+            List<Transaction> t =  transactionRepository.findByAccount_AccountId(accountId);
+            return  t;
+        }
+        return null;
+    }
 
-        return transactionRepository.getAllMyAccTransactions(accountId);
+    @Override
+    public List<Transaction> listAll(){
+        return  transactionRepository.findAll();
     }
 }
