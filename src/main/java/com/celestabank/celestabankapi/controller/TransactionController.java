@@ -1,7 +1,9 @@
 package com.celestabank.celestabankapi.controller;
 
+import com.celestabank.celestabankapi.dto.TransactionDTO;
 import com.celestabank.celestabankapi.entity.Transaction;
 import com.celestabank.celestabankapi.service.TransactionServiceImpl;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,4 +35,15 @@ public class TransactionController {
     public List<Transaction> getAllMyAccTransactions(@PathVariable int accountId) {
         return transactionService.getAllMyAccTransactions(accountId);
     }
+    @GetMapping("/all")
+    @ApiOperation("LISTE TOTALE DES TRANSACTIONS")
+    public List<Transaction> listTransaction() {
+        return transactionService.listAll();
+    }
+    @GetMapping("/allByAcc/{accountId}")
+    @ApiOperation("LISTE TOTALE DES TRANSACTIONS FAITES A PARTIR D'UN COMPTE")
+    public List<Transaction> listTransactionByAcc(@PathVariable long accountId) {
+        return transactionService.getAccByNum(accountId);
+    }
+
 }
